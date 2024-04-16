@@ -159,3 +159,5 @@ cd $CURRENT_PATH
 
 # bun completions
 [ -s "/home/sean/.bun/_bun" ] && source "/home/sean/.bun/_bun"
+
+[ -f "/home/sean/.ghcup/env" ] && . "/home/sean/.ghcup/env" # ghcup-env

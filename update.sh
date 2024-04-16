@@ -24,6 +24,7 @@ cp /home/sean/.config/picom.conf ./config/
 cp /home/sean/.doom.d/init.el ./doom.d/
 cp /home/sean/.doom.d/config.el ./doom.d/
 cp /home/sean/.doom.d/packages.el ./doom.d/
+cp /home/sean/.config/nvim/init.lua ./config/nvim/
 cp /home/sean/.config/BetterDiscord/themes/* ./BetterDiscord/themes
 cp /home/sean/.config/.zshrc zshrc
 cp -r /home/sean/.oh-my-zsh/themes/ .
