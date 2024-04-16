@@ -1,8 +1,7 @@
-;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
-
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
@@ -16,6 +15,9 @@
 
 (setq file-name-handler-alist-original file-name-handler-alist)
 (setq file-name-handler-alist nil)
+(setq display-line-numbers-type 'visual)
+(setq visual-line-mode 1)
+
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
@@ -37,27 +39,46 @@
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 
-(setq doom-font (font-spec :family "Terminus (TTF)" :size 12)
-      doom-variable-pitch-font (font-spec :family "Terminus (TTF)") ; inherits `doom-font''s :size
-      doom-unicode-font (font-spec :family "Terminus (TTF)" :size 12)
-      doom-big-font (font-spec :family "Terminus (TTF)" :size 12))
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-gruvbox)
-(setq doom-themes-neotree-file-icons t)
-(setq doom-themes-org-fontify-special-tags t)
-(setq doom-gruvbox-brighter-comments t)
-(setq doom-gruvbox-dark-variant "soft")
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'visual)
+(setq doom-theme 'doom-one)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
+(defun my-neotree-project-dir-toggle ()
+  "Open NeoTree using the project root, using projectile, find-file-in-project,
+or the current buffer directory."
+  (interactive)
+  (require 'neotree)
+  (let* ((filepath (buffer-file-name))
+         (project-dir
+          (with-demoted-errors "neotree-project-dir-toggle error: %S"
+              (cond
+               ((featurep 'projectile)
+                (projectile-project-root))
+               ((featurep 'find-file-in-project)
+                (ffip-project-root))
+               (t ;; Fall back to version control root.
+                (if filepath
+                    (vc-call-backend
+                     (vc-responsible-backend filepath) 'root filepath)
+                  nil)))))
+         (neo-smart-open t))
+
+    (if (and (fboundp 'neo-global--window-exists-p)
+             (neo-global--window-exists-p))
+        (neotree-hide)
+      (neotree-show)
+      (when project-dir
+        (neotree-dir project-dir))
+      (when filepath
+        (neotree-find filepath)))))
+
+
+(global-set-key [f1] 'my-neotree-project-dir-toggle)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -90,7 +111,6 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-
 ; don't write contents of " register after pasting on a block
 (setq evil-kill-on-visual-paste nil)
 
@@ -109,7 +129,7 @@
 (set-fringe-mode 0)
 
 ; allow underscores to be word delimeters
-(modify-syntax-entry ?_ "w")
+;;(modify-syntax-entry ?_ "w")
 
 ; allow more bytes to eb read
 (setq read-process-output-max (* 1024 1024))
@@ -155,29 +175,28 @@
   (evil-make-overriding-map corfu-map)
   (map! :i "C-e" #'completion-at-point)
   :init
-  (global-corfu-mode +1)
-  (corfu-doc-mode +1))
+  (global-corfu-mode +1))
 
 (after! evil-org
   (map! (:map evil-org-mode-map
          :i "C-j" nil
          :i "C-k" nil
-         :i "C-;" nil
+         :i "C-h" nil
          :i "C-l" nil
          :i "<return>" nil
          :i "RET" nil)))
 
-(use-package! corfu-doc
-  :bind (:map corfu-map
-         ("C-;" . corfu-doc-toggle)
-         ("C-n" . corfu-doc-scroll-down)
-         ("C-p" . corfu-doc-scroll-up))
-  :config
-  (setq corfu-doc-delay 0.2
-        corfu-doc-max-width 80
-        corfu-doc-max-height 40)
-  :init
-  (corfu-doc-mode +1))
+;; (use-package! corfu-doc
+;;   :bind (:map corfu-map
+;;          ("C-;" . corfu-doc-toggle)
+;;          ("C-n" . corfu-doc-scroll-down)
+;;          ("C-p" . corfu-doc-scroll-up))
+;;   :config
+;;   (setq corfu-doc-delay 0.2
+;;         corfu-doc-max-width 80
+;;         corfu-doc-max-height 40)
+;;   :init
+;;   (corfu-doc-mode +1))
 
 (use-package! kind-icon
   :after corfu
@@ -215,6 +234,16 @@
    '((top . 10)
      (width . 0.4)
      (left . 0.5))))
+(setq tramp-default-method "ssh")
+(evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
+(evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
+(evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
+(evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
+(evil-define-key 'normal neotree-mode-map (kbd "g") 'neotree-refresh)
+(evil-define-key 'normal neotree-mode-map (kbd "n") 'neotree-next-line)
+(evil-define-key 'normal neotree-mode-map (kbd "p") 'neotree-previous-line)
+(evil-define-key 'normal neotree-mode-map (kbd "A") 'neotree-stretch-toggle)
+(evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle)
 
 ;;(ivy-mode)
 ;;(require 'ivy-posframe)
@@ -306,11 +335,6 @@
       "," #'consult-buffer
       "<" #'consult-buffer-other-window)
 
-(after! consult
-  (consult-customize
-   consult-buffer :preview-key (kbd "C-,")
-   consult-buffer-other-window :preview-key (kbd "C-,")))
-
 (use-package! affe
   :after orderless
   :config
@@ -322,87 +346,23 @@
    :prompt "Find file in Project  "))
 
 (setq
- which-key-idle-delay 0.3)
+ which-key-idle-delay 0.2)
 (after! which-key (setq-hook! 'which-key-init-buffer-hook line-spacing 0))
 
 (with-eval-after-load 'treemacs
   (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
 
 (global-set-key (kbd "C-x M-m") 'shell)
-(global-set-key [f1] 'neotree-toggle)
+;; (global-set-key [f1] 'neotree-toggle)
 
-(setq winum-keymap
-    (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "C-`") 'winum-select-window-by-number)
-      (define-key map (kbd "C-²") 'winum-select-window-by-number)
-      (define-key map (kbd "M-0") 'winum-select-window-0-or-10)
-      (define-key map (kbd "M-1") 'winum-select-window-1)
-      (define-key map (kbd "M-2") 'winum-select-window-2)
-      (define-key map (kbd "M-3") 'winum-select-window-3)
-      (define-key map (kbd "M-4") 'winum-select-window-4)
-      (define-key map (kbd "M-5") 'winum-select-window-5)
-      (define-key map (kbd "M-6") 'winum-select-window-6)
-      (define-key map (kbd "M-7") 'winum-select-window-7)
-      (define-key map (kbd "M-8") 'winum-select-window-8)
-      map))
-
-(after! lsp-mode
-    (setq lsp-restart 'ignore
-        lsp-headerline-breadcrumb-enable nil
-        lsp-enable-symbol-highlighting t
-        lsp-enable-indentation nil
-        lsp-eldoc-enable-hover t
-        lsp-eldoc-render-all nil
-        lsp-signature-render-documentation nil
-        lsp-signature-auto-activate nil
-        lsp-signature-doc-lines 1
-        lsp-auto-guess-root nil
-        lsp-enable-file-watchers nil
-        lsp-enable-on-type-formatting nil)
-
-    ;; Rust
-    (setq
-        lsp-rust-server 'rust-analyzer
-        lsp-rust-analyzer-cargo-watch-command "clippy"
-        lsp-rust-analyzer-inlay-hints-mode t
-        lsp-rust-analyzer-server-display-inlay-hints nil)
-
-    ;; C++
-    (setq lsp-clients-clangd-args
-        '("-j=4"
-             "--malloc-trim"
-             "--log=error"
-             "--background-index"
-             "--clang-tidy"
-             "--cross-file-rename"
-             "--completion-style=detailed"
-             "--pch-storage=memory"
-             "--header-insertion=never"
-             "--header-insertion-decorators=0"))
-    (add-to-list 'flycheck-disabled-checkers 'c/c++-clang)
-    (add-to-list 'flycheck-disabled-checkers 'c/c++-gcc)
-    (after! lsp-clangd (set-lsp-priority! 'clangd 2)))
-
-(after! 'lsp-mode
-  (setq lsp-log-io nil)
-  (setq lsp-enable-folding nil)
-  (setq lsp-enable-snippet t)
-  (setq lsp-diagnostic-package :none)
-  (setq lsp-enable-completion-at-point nil)
-  (setq lsp-enable-symbol-highlighting nil)
-  (setq lsp-enable-links nil)
-  (setq lsp-restart 'auto-restart)
-  (setq lsp-client-packages '(lsp-clients))
-  (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored) ; json
-  ;; don't ping LSP lanaguage server too frequently
-  (defvar lsp-on-touch-time 0)
-  (defadvice lsp-on-change (around lsp-on-change-hack activate)
-    ;; don't run `lsp-on-change' too frequently
-    (when (> (- (float-time (current-time))
-                lsp-on-touch-time) 30) ;; 30 seconds
-      (setq lsp-on-touch-time (float-time (current-time)))
-      ad-do-it))
-)
+(define-key evil-motion-state-map (kbd "C-h") #'evil-window-left)
+(define-key evil-motion-state-map (kbd "C-j") #'evil-window-down)
+(define-key evil-motion-state-map (kbd "C-k") #'evil-window-up)
+(define-key evil-motion-state-map (kbd "C-l") #'evil-window-right)
+(global-set-key (kbd "C-H") (lambda () (interactive) (enlarge-window -1 t)))
+(global-set-key (kbd "C-J") (lambda () (interactive) (enlarge-window  1)))
+(global-set-key (kbd "C-K") (lambda () (interactive) (enlarge-window -1)))
+(global-set-key (kbd "C-L") (lambda () (interactive) (enlarge-window 1)))
 
 (after! lsp-ui
     (setq lsp-ui-sideline-enable nil
@@ -418,43 +378,15 @@
     (setq lsp-ui-doc-enable t)
     (setq lsp-ui-imenu-enable t))
 
-(after! rustic
-    (setq
-        rustic-lsp-server 'rust-analyzer
-        rustic-format-on-save nil))
-
-(use-package! winum)
-
-(defun winum-assign-0-to-neotree ()
-  (when (string-match-p (buffer-name) ".*\\*NeoTree\\*.*") 10))
 
 (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
-(add-to-list 'winum-assign-functions #'winum-assign-0-to-neotree)
-
-(set-face-attribute 'winum-face nil :weight 'bold)
-
-(setq window-numbering-scope            'global
-      winum-reverse-frame-list          nil
-      winum-auto-assign-0-to-minibuffer t
-      winum-auto-setup-mode-line        t
-      winum-format                      " %s "
-      winum-mode-line-position          1
-      winum-ignored-buffers             '(" *which-key*")
-      winum-ignored-buffers-regexp      '(" \\*Treemacs-.*"))
-
-
-
-;; I personally like word wrap
-(+global-word-wrap-mode)
 
 ;; make menus appear at the top so they're more comfortable to read
 (mini-frame-mode)
 
 ; completetion
 (global-corfu-mode)
-
-(winum-mode)
 
 ; ide time tracking
 (global-wakatime-mode)

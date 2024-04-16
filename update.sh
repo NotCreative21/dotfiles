@@ -1,6 +1,7 @@
 #!/bin/sh
 cp /home/sean/.config/Xresources .
 cp /home/sean/.config/Xdefaults  .
+cp -r /home/sean/.config/alacritty ./config/
 cp /home/sean/.mkshrc .
 mv .mkshrc mkshrc
 cp /home/sean/.config/kshrc .

@@ -52,3 +52,4 @@ URxvt.scrollBar:                   false
 URxvt.font:                        xft:Terminus:size=11:antilias=true
 URxvt*depth:                       32
 URxvt*saveLines:                   10000
+Xft.dpi: 96

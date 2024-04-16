@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+#export ZSH="$HOME/.config/.oh-my-zsh"
 
 CURRENT_PATH=$PWD
 
@@ -10,7 +10,7 @@ CURRENT_PATH=$PWD
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="lambda-gitster"
+#ZSH_THEME="lambda-gitster"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -72,21 +72,21 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(
-	gitfast
-	ripgrep
-	zsh-navigation-tools
-	yarn
-	colored-man-pages
-	npm
-	fd
-	pip
-	jump
-	you-should-use
-	dotenv
-)
-
-source $ZSH/oh-my-zsh.sh
+# plugins=(
+# 	gitfast
+# 	ripgrep
+# 	zsh-navigation-tools
+# 	yarn
+# 	colored-man-pages
+# 	npm
+# 	fd
+# 	pip
+# 	jump
+# 	you-should-use
+# 	dotenv
+# )
+#
+# source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -131,20 +131,20 @@ export PATH=$PATH:/home/sean/.config/scripts/
 # move coredumps
 #export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 # compinit -d ~/.cache/zsh/zcompdump-$HOST
-
+setopt autocd
 source ~/.config/zsh-autopair/autopair.zsh
 autopair-init
 export COLORTERM=truecolor
 
 # ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#c6d6f7,bold"
-bindkey '^k' autosuggest-accept
-bindkey '^ ' autosuggest-execute
-bindkey '^b' autosuggest-clear
+# bindkey '^k' autosuggest-accept
+# bindkey '^ ' autosuggest-execute
+# bindkey '^b' autosuggest-clear
 
 source ~/.config/.cargo/env
 
 # git clone https://github.com/zsh-users/zsh-autosuggestions ~/.config/zsh-autosuggestions
-source ~/.config/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source ~/.config/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.config/zsh-syntax-highlighting
 # echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
@@ -152,5 +152,10 @@ source ~/.config/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 source ~/.config/alias_all
 
+PS1='%F{blue}%1~ %F{white}ς '
+
 # set PWD to current file
 cd $CURRENT_PATH
+
+# bun completions
+[ -s "/home/sean/.bun/_bun" ] && source "/home/sean/.bun/_bun"

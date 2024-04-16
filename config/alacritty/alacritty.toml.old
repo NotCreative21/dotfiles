@@ -1,0 +1,203 @@
+[colors]
+draw_bold_text_with_bright_colors = true
+
+[env]
+TERM = "xterm-256color"
+
+[font]
+size = 9
+
+[font.bold]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Regular"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Regular"
+
+[font.bright]
+black = "#6b7b88"
+blue = "#a4cef6"
+cyan = "#85cfcd"
+green = "#8a9e7b"
+magenta = "#e892d8"
+red = "#d76b68"
+white = "#c6d6f7"
+yellow = "#c69e6d"
+
+[font.footer_bar]
+background = "#a89984"
+foreground = "#f0f0f0"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Regular"
+
+[font.normal]
+black = "#0f101a"
+blue = "#9abada"
+cyan = "#97c9c7"
+green = "#bdccb2"
+magenta = "#dca5d2"
+red = "#be5e67"
+white = "#c9d2e4"
+yellow = "#e98b4d"
+
+[[keyboard.bindings]]
+action = "Paste"
+key = "V"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "Copy"
+key = "C"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "Quit"
+key = "Q"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "Quit"
+key = "W"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "CreateNewWindow"
+key = "T"
+mods = "Command"
+
+[schemes.Dracula.bright]
+black = "#4d4d4d"
+blue = "#caa9fa"
+cyan = "#9aedfe"
+green = "#5af78e"
+magenta = "#ff92d0"
+red = "#ff6e67"
+white = "#e6e6e6"
+yellow = "#f4f99d"
+
+[schemes.Dracula.cursor]
+cursor = "CellForeground"
+text = "CellBackground"
+
+[schemes.Dracula.dim]
+black = "#14151b"
+blue = "#4d5b86"
+cyan = "#59dffc"
+green = "#1ef956"
+magenta = "#ff46b0"
+red = "#ff2222"
+white = "#e6e6d1"
+yellow = "#ebf85b"
+
+[schemes.Dracula.line_indicator]
+background = "None"
+foreground = "None"
+
+[schemes.Dracula.normal]
+black = "#000000"
+blue = "#bd93f9"
+cyan = "#8be9fd"
+green = "#50fa7b"
+magenta = "#ff79c6"
+red = "#ff5555"
+white = "#bfbfbf"
+yellow = "#f1fa8c"
+
+[schemes.Dracula.primary]
+background = "#2E3440"
+foreground = "#f8f8f2"
+
+[schemes.Dracula.search.focused_match]
+background = "#ffb86c"
+foreground = "#44475a"
+
+[schemes.Dracula.search.matches]
+background = "#50fa7b"
+foreground = "#44475a"
+
+[schemes.Dracula.selection]
+background = "#2E3440"
+text = "CellForeground"
+
+[schemes.Dracula.vi_mode_cursor]
+cursor = "CellForeground"
+text = "CellBackground"
+
+[schemes.GruvboxDark.bright]
+black = "#928374"
+blue = "#83a598"
+cyan = "#8ec07c"
+green = "#b8bb26"
+magenta = "#d3869b"
+red = "#fb4934"
+white = "#ebdbb2"
+yellow = "#fabd2f"
+
+[schemes.GruvboxDark.normal]
+black = "#282828"
+blue = "#458588"
+cyan = "#689d6a"
+green = "#98971a"
+magenta = "#b16286"
+red = "#cc241d"
+white = "#a89984"
+yellow = "#d79921"
+
+[schemes.GruvboxDark.primary]
+background = "#282828"
+foreground = "#ebdbb2"
+
+[schemes.Nord.bright]
+black = "#4C566A"
+blue = "#81A1C1"
+cyan = "#8FBCBB"
+green = "#A3BE8C"
+magenta = "#B48EAD"
+red = "#BF616A"
+white = "#ECEFF4"
+yellow = "#EBCB8B"
+
+[schemes.Nord.normal]
+black = "#3B4252"
+blue = "#81A1C1"
+cyan = "#88C0D0"
+green = "#A3BE8C"
+magenta = "#B48EAD"
+red = "#BF616A"
+white = "#E5E9F0"
+yellow = "#EBCB8B"
+
+[schemes.Nord.primary]
+background = "#2E3440"
+foreground = "#D8DEE9"
+
+[schemes.TomorrowNight.bright]
+black = "#666666"
+blue = "#81a2be"
+cyan = "#54ced6"
+green = "#9ec400"
+magenta = "#b77ee0"
+red = "#ff3334"
+white = "#282a2e"
+yellow = "#f0c674"
+
+[schemes.TomorrowNight.cursor]
+cursor = "#ffffff"
+text = "#1d1f21"
+
+[schemes.TomorrowNight.normal]
+black = "#1d1f21"
+blue = "#81a2be"
+cyan = "#70c0ba"
+green = "#b5bd68"
+magenta = "#b294bb"
+red = "#cc6666"
+white = "#373b41"
+yellow = "#e6c547"
+
+[schemes.TomorrowNight.primary]
+background = "#1d1f21"
+foreground = "#c5c8c6"
