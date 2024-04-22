@@ -1291,6 +1291,9 @@ map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silen
 map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
 -- map("n", "K", "vim.diagnostic.open_float", { silent = true })
 require('remote-sshfs').setup({})
+vim.cmd(":set guicursor=")
+-- Workaround some broken plugins which set guicursor indiscriminately.
+vim.cmd(":autocmd OptionSet guicursor noautocmd set guicursor=")
 
 vim.g.clipboard = unnamedplus
 --vim.g.indentLine_fileTypeExclude = ['dashboard']

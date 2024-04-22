@@ -52,6 +52,9 @@ alias gsu="git push --set-upstream origin master"
 alias bunR="bun run dev"
 alias r="source ~/.config/alias_all"
 
+bindkey -e
+export PATH=/home/sean/.local/bin:$PATH
+
 # directory aliases
 alias vid="cd /mnt/scratch_disk/"
 alias s="cd $HOME/.config/scripts/"
@@ -63,6 +66,7 @@ alias t="reattach.py"
 alias tn="tmux"
 alias tx="tmux a -t"
 alias vimconf="v ~/.config/nvim/init.vim"
+export XDG_CURRENT_DESKTOP=i3
 export WINEPREFIX="/home/sean/.fusion360/wineprefixes/"
 export TERM='screen-256color'
 export EDITOR="nvim"

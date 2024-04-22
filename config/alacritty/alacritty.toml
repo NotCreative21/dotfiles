@@ -45,3 +45,10 @@ action = "CreateNewWindow"
 key = "T"
 mods = "Command"
 
+[[keyboard.bindings]]
+action = "ScrollHalfPageUp"
+key="PageUp"
+
+[[keyboard.bindings]]
+action = "ScrollHalfPageDown"
+key="PageDown"

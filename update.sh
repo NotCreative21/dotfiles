@@ -22,6 +22,8 @@ cp /usr/src/linux/.config .
 mv .config kernel.config
 cp /home/sean/.config/picom.conf ./config/
 cp /home/sean/.doom.d/init.el ./doom.d/
+cp /home/sean/.config/xmonad/xmonad.hs .
+cp /home/sean/.config/xmonad/xmobarrc .
 cp /home/sean/.doom.d/config.el ./doom.d/
 cp /home/sean/.doom.d/packages.el ./doom.d/
 cp /home/sean/.config/nvim/init.lua ./config/nvim/
