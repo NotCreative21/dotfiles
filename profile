@@ -22,6 +22,7 @@ unset appendpath
 
 export HOME="/home/sean"
 export PATH=$PATH:$HOME/.config/scripts
+export PATH=$PATH:/usr/local/bin
 export XDG_CONFIG_HOME="$HOME/.config"
 export CARGO_HOME="$HOME/.config/.cargo"
 export RUSTUP_HOME="$HOME/.config/.rustup"

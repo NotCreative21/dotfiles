@@ -158,6 +158,6 @@ PS1='%F{blue}%1~ %F{white}ς '
 cd $CURRENT_PATH
 
 # bun completions
-[ -s "/home/sean/.bun/_bun" ] && source "/home/sean/.bun/_bun"
+#[ -s "/home/sean/.bun/_bun" ] && source "/home/sean/.bun/_bun"
 
 [ -f "/home/sean/.ghcup/env" ] && . "/home/sean/.ghcup/env" # ghcup-env

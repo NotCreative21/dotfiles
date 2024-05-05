@@ -53,20 +53,22 @@ alias bunR="bun run dev"
 alias r="source ~/.config/alias_all"
 
 bindkey -e
-export PATH=/home/sean/.local/bin:$PATH
+export PATH=$PATH/home/sean/.local/bin
+#export PATH=$PATH:/usr/local/bin
 
 # directory aliases
 alias vid="cd /mnt/scratch_disk/"
 alias s="cd $HOME/.config/scripts/"
-alias dwm="cd $HOME/.config/sean/dwm/"
-alias st="cd $HOME/.config/sean/st/"
-alias dmenu="cd $HOME/.config/sean/dmenu/"
 
 alias t="reattach.py"
 alias tn="tmux"
 alias tx="tmux a -t"
 alias vimconf="v ~/.config/nvim/init.vim"
-export XDG_CURRENT_DESKTOP=i3
+alias services="cd /etc/sv/"
+alias quiet_gpu="sudo nvidia-settings -a '[fan:0]/GPUTargetFanSpeed=33'"
+alias speakers="pactl list sinks short"
+alias setspeaker="pactl set-default-sink "
+export XDG_CURRENT_DESKTOP=xmonad
 export WINEPREFIX="/home/sean/.fusion360/wineprefixes/"
 export TERM='screen-256color'
 export EDITOR="nvim"

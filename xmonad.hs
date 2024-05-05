@@ -1,5 +1,6 @@
 import qualified Data.Map as M
 import Graphics.X11.ExtraTypes (xF86XK_AudioLowerVolume, xF86XK_AudioMicMute, xF86XK_AudioMute, xF86XK_AudioNext, xF86XK_AudioPlay, xF86XK_AudioPrev, xF86XK_AudioRaiseVolume)
+import XMonad.Hooks.EwmhDesktops
 import XMonad
 import XMonad.Actions.CycleWS
 import qualified XMonad.Actions.FlexibleResize as Flex
@@ -29,6 +30,7 @@ import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig
 import XMonad.Util.Loggers (logTitles)
 import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), customFloating, namedScratchpadAction, namedScratchpadManageHook)
+import XMonad.Util.SpawnOnce
 
 myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm]
   where
@@ -41,7 +43,7 @@ myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm]
         t = (1 - h) / 2
         l = (1 - h) / 2
 
-myTerminal = "alacritty"
+myTerminal = "tabbed -r 2 st -w '' -e zsh"
 
 myFocusFollowsMouse = True
 
@@ -117,7 +119,9 @@ myEventHook = mempty
 myWorkspaces = ["ε", "ζ", "β", "δ", "η", "θ", "λ"] -- Workspace declaration
 --myWorkspaces = ["1", "2", "3", "4", "5", "6", "7", "8"] -- Workspace declaration
 
-myStartupHook = return ()
+myStartupHook = do
+  spawnOnce "xset r rate 200 20"
+  spawnOnce "xmobar &"
 
 myXmobarPP :: PP
 myXmobarPP =
@@ -161,6 +165,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ((modm .|. shiftMask, xK_f), spawn "firefox"),
       ((modm .|. shiftMask, xK_d), unGrab *> spawn "Discord"), -- this opens launcher and we don't want to focus on it
       ((modm .|. shiftMask, xK_f), spawn "pcmanfm"),
+      ((modm .|. shiftMask, xK_l), spawn "sleep 0.5;xset dpms force off"),
+      ((modm .|. shiftMask, xK_v), spawn "sleep 0.5;xdotool type $(xclip -o)"),
       ((0, xF86XK_AudioRaiseVolume), unGrab *> spawn "pactl set-sink-volume @DEFAULT_SINK@ +10%"), -- don't want to focus on any of these
       ((0, xF86XK_AudioLowerVolume), unGrab *> spawn "pactl set-sink-volume @DEFAULT_SINK@ +10%"),
       ((0, xF86XK_AudioPlay), unGrab *> spawn "playerctl play-pause"),
@@ -192,6 +198,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
 main :: IO ()
 main =
   xmonad
+    $ ewmhFullscreen
     . withEasySB (statusBarProp "xmobar ~/.config/xmonad/xmobarrc" (pure myXmobarPP)) defToggleStrutsKey
     $ def
       { terminal = myTerminal,
