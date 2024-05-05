@@ -7,7 +7,7 @@ mv .mkshrc mkshrc
 cp /home/sean/.config/kshrc .
 cp /etc/profile .
 cp /etc/X11/xinit/xinitrc .
-cp /usr/local/bin/sx .
+cp /usr/bin/sx .
 cp -r /home/sean/.config/gtk-3.0 .
 cp -r /home/sean/.config/gtk-2.0 .
 cp /home/sean/.config/nvim/init.vim ./config

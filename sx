@@ -1,11 +1,11 @@
 #!/bin/sh --
-# sx - start an xserver
+# sx - start an xorg server
 # requires xauth Xorg /dev/urandom
 
 cleanup() {
-    if [ "$pid" ] && kill -0 "$pid" 2> /dev/null; then
-        kill "$pid"
-        wait "$pid"
+    if [ "$server" ] && kill -0 "$server" 2> /dev/null; then
+        kill "$server"
+        wait "$server"
         xorg=$?
     fi
 
@@ -14,10 +14,6 @@ cleanup() {
     fi
 
     xauth remove :"$tty"
-
-    if [ "$1" = exit ]; then
-        exit "${xorg:-0}"
-    fi
 }
 
 stty=$(stty -g)
@@ -31,42 +27,49 @@ mkdir -p -- "$cfgdir" "$datadir"
 export XAUTHORITY="${XAUTHORITY:-$datadir/xauthority}"
 touch -- "$XAUTHORITY"
 
+trap 'cleanup; exit "${xorg:-0}"' EXIT
+
+export DISPLAY=:1
+
+for signal in HUP INT QUIT TERM; do
+    # shellcheck disable=SC2064
+    trap "cleanup; trap - $signal EXIT; kill -s $signal $$" "$signal"
+done
+
+# Xorg will return a USR1 signal to the parent process indicating it is ready
+# to accept connections if it inherited a USR1 signal with a SIG_IGN
+# disposition.  Consequently a client may be started directly from a USR1
+# signal handler and obviate the need to poll for server readiness.
+trap 'DISPLAY=:$tty "${@:-$cfgdir/sxrc}" & wait "$!"' USR1
+
 xauth add :"$tty" MIT-MAGIC-COOKIE-1 "$(od -An -N16 -tx /dev/urandom | tr -d ' ')"
-
-trap 'cleanup; trap - INT; kill -INT "$$"' INT
-trap 'cleanup exit' EXIT HUP TERM QUIT
-
-# Xorg will check whether it inherited a USR1 with a disposition of SIG_IGN and
-# use this state to reply back to the parent process with its own USR1.
-# This is done to indicate that the server is ready to accept connections.
-# Taking advantage of this feature allows launching the client directly from a
-# USR1 signal trap which obviates the need to poll for server readiness.
-trap 'DISPLAY=:$tty exec "${@:-$cfgdir/sxrc}" & wait "$!"' USR1
-(trap '' USR1 && exec Xorg :"$tty" -keeptty vt"$tty" -noreset -auth "$XAUTHORITY") & pid=$!
-wait "$pid"
-
-export DISPLAY=":1"
+(trap '' USR1 && exec Xorg :"$tty" vt"$tty" -keeptty -noreset -auth "$XAUTHORITY") &
+server=$!
+wait "$server"
 export $(dbus-launch)
+export __GL_THREADED_OPTIMIZATIONS=0
+export PATH=/home/sean/.cabal/bin:$PATH
 
-xrandr --output DP-0 --mode 1920x1080 --rate 119.98 --primary  --rotate normal
-xrandr --output HDMI-0 --mode 1920x1080 --rate 60.00  --rotate left --left-of DP-0
-xrandr --output DP-3 --mode 1920x1080 --rate 60.00 --rotate right --right-of DP-0
-xset r rate 300 30
+xrandr --output DisplayPort-1 --mode 3840x2160 --rate 120.0 --primary --rotate normal
+xrandr --output HDMI-A-0 --mode 1920x1080 --rate 90 --rotate left --left-of DisplayPort-1
+xrandr --output DisplayPort-2 --mode 2560x1440 --rate 120.0 --rotate right --right-of DisplayPort-1
+gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+#xrandr --output DP-0 --mode 2560x1440 --rate 120.0 --primary --rotate normal
+#xrandr --output HDMI-0 --mode 1920x1080 --rate 120.00 --primary --rotate normal --left-of DP-0
+#xrandr --output DP-2 --mode 1920x1080 --rate 60.00 --primary --rotate left --right-of DP-0
+#xrandr --output DP-5 --mode 1920x1080 --rate 60.00 --primary --rotate normal --above HDMI-0
+{ xmobar &}&
 
+setwall $(cat /home/sean/.config/scripts/curwall)
+
+xset r rate 200 20
+dunst > /dev/null 2>&1 &
 xrdb /home/sean/.config/Xresources
 xrdb -merge /home/sean/.config/Xdefaults
-unset XDG_RUNTIME_DIR
-export XDG_RUNTIME_DIR=$(mktemp -d /tmp/$(id -u)-runtime-dir.XXX)
-killall pulseaudio
-# there should be no errors, so we can simply just yeet all output
-# I will save the dwm log because if that crashes then something is very wrong
-pulseaudio --daemonize=no --exit-idle-time=-1 > /dev/null 2>&1 &
-# ntp replacement ofc
-TimeServe 132.145.193.229:45000
-picom -b 2>&1 &
-dunst > /dev/null 2>&1 &
-/home/sean/.config/scripts/sbar.sh > /dev/null 2>&1 &
-setwall $(cat /home/sean/.config/scripts/curwall)
-exec dbus-launch --exit-with-session dwm > /dev/null 2>&1
-#exec /home/sean/Desktop/stuff/wm-project/rwm/target/debug/rwm > ~/test.log
-#exec /home/sean/xwm > ~/test.log
+#xwallpaper --no-randr --focus /home/sean/.config/walls/snake_bottle.png
+#unset XDG_RUNTIME_DIR
+#export XDG_RUNTIME_DIR=$(mktemp -d /tmp/$(id -u)-runtime-dir.XXX)
+xsetroot -cursor_name left_ptr &
+restart_audio &
+#exec dbus-run-session i3
+exec dbus-run-session $HOME/.cache/xmonad/xmonad-x86_64-linux
