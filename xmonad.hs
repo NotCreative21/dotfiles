@@ -7,8 +7,8 @@ import qualified XMonad.Actions.FlexibleResize as Flex
 import XMonad.Actions.FloatSnap
 import XMonad.Actions.MostRecentlyUsed (Location (workspace))
 import XMonad.Actions.SwapPromote (masterHistoryHook)
+import XMonad.Layout.IndependentScreens
 import XMonad.Actions.TopicSpace (workspaceHistoryHook)
-import XMonad.Actions.UpdatePointer (updatePointer)
 import XMonad.Hooks.CurrentWorkspaceOnTop (currentWorkspaceOnTop)
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageHelpers (doRectFloat)
@@ -90,7 +90,6 @@ myLogHook =
     <> masterHistoryHook
     <> currentWorkspaceOnTop
     <> refocusLastLogHook
-    <> updatePointer (0.5, 0.5) (0, 0)
 
 myLayoutHook = ifWider 1440 myLayout $ Mirror zoomRow
 
@@ -190,13 +189,14 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ((modm .|. controlMask, xK_h), sendMessage Shrink),
       ((modm .|. controlMask, xK_l), sendMessage Expand)
     ]
-      ++ [ ((m .|. modm, k), windows $ f i)
-           | (i, k) <- zip (workspaces conf) [xK_1, xK_2, xK_3, xK_4, xK_5, xK_6, xK_7],
-             (f, m) <- [(W.view, 0), (W.shift, controlMask)]
+      ++ [ ((m .|. modm, k), windows $ onCurrentScreen f i)
+           | (i, k) <- zip (workspaces' conf) [xK_1 .. xK_7],
+             (f, m) <- [(W.greedyView, 0), (W.shift, controlMask)]
          ]
 
 main :: IO ()
-main =
+main = do
+  nScreens <- countScreens
   xmonad
     $ ewmhFullscreen
     . withEasySB (statusBarProp "xmobar ~/.config/xmonad/xmobarrc" (pure myXmobarPP)) defToggleStrutsKey
@@ -213,7 +213,7 @@ main =
         handleEventHook = myEventHook,
         logHook = myLogHook,
         mouseBindings = myMouseBinds,
-        workspaces = myWorkspaces,
+        workspaces = withScreens nScreens myWorkspaces,
         startupHook = myStartupHook,
         keys = myKeys
       }
