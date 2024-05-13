@@ -189,10 +189,16 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ((modm .|. controlMask, xK_h), sendMessage Shrink),
       ((modm .|. controlMask, xK_l), sendMessage Expand)
     ]
+    ++ [ ((m .|. modm, k), windows $ f i)
+       | (i, k) <- zip (workspaces conf) [xK_1 .. xK_7],
+         (f, m) <- [(W.view, 0), (W.shift, controlMask)]
+     ]
+    {-
       ++ [ ((m .|. modm, k), windows $ onCurrentScreen f i)
            | (i, k) <- zip (workspaces' conf) [xK_1 .. xK_7],
              (f, m) <- [(W.greedyView, 0), (W.shift, controlMask)]
          ]
+    -}
 
 main :: IO ()
 main = do
@@ -213,7 +219,8 @@ main = do
         handleEventHook = myEventHook,
         logHook = myLogHook,
         mouseBindings = myMouseBinds,
-        workspaces = withScreens nScreens myWorkspaces,
+        --workspaces = withScreens nScreens myWorkspaces,
+        workspaces = myWorkspaces,
         startupHook = myStartupHook,
         keys = myKeys
       }
