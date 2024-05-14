@@ -1,4 +1,7 @@
 # If you come from bash you might have to change your $PATH.
+if [[ $ZSH_PROFILE ]]; then
+     zmodload zsh/zprof
+fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
@@ -141,6 +144,27 @@ export COLORTERM=truecolor
 # bindkey '^ ' autosuggest-execute
 # bindkey '^b' autosuggest-clear
 
+### ctrl+arrows
+bindkey "\e[1;5C" forward-word
+bindkey "\e[1;5D" backward-word
+# urxvt
+bindkey "\eOc" forward-word
+bindkey "\eOd" backward-word
+
+### ctrl+delete
+bindkey "\e[3;5~" kill-word
+# urxvt
+bindkey "\e[3^" kill-word
+
+### ctrl+backspace
+bindkey '^H' backward-kill-word
+
+### ctrl+shift+delete
+bindkey "\e[3;6~" kill-line
+# urxvt
+bindkey "\e[3@" kill-line
+
+
 source ~/.config/.cargo/env
 
 # git clone https://github.com/zsh-users/zsh-autosuggestions ~/.config/zsh-autosuggestions
@@ -161,3 +185,13 @@ cd $CURRENT_PATH
 #[ -s "/home/sean/.bun/_bun" ] && source "/home/sean/.bun/_bun"
 
 [ -f "/home/sean/.ghcup/env" ] && . "/home/sean/.ghcup/env" # ghcup-env
+
+export PATH="$PATH:/home/sean/.local/bin"
+export PYENV_ROOT="${HOME}/.config/pyenv"
+export PATH="${PYENV_ROOT}/bin:${PATH}"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+if [[ $ZSH_PROFILE ]]; then
+     zprof
+fi
+

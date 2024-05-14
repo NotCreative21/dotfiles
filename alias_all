@@ -68,6 +68,8 @@ alias services="cd /etc/sv/"
 alias quiet_gpu="sudo nvidia-settings -a '[fan:0]/GPUTargetFanSpeed=33'"
 alias speakers="pactl list sinks short"
 alias setspeaker="pactl set-default-sink "
+alias runzshprofile="export ZSH_PROFILE=true && zsh && echo $(unset ZSH_PROFILE)"
+alias reloadshell="source ~/.config/.zshrc"
 export XDG_CURRENT_DESKTOP=xmonad
 export WINEPREFIX="/home/sean/.fusion360/wineprefixes/"
 export TERM='screen-256color'
