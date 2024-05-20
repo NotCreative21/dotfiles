@@ -79,6 +79,8 @@ myManageHook =
       role =? "pop-up" --> doFloat,
       resource =? "desktop_window" --> doIgnore,
       appName =? "Firefox" --> doFloat,
+      className =? "xdg-desktop-portal-gtk" --> doIgnore,
+      role =? "GtkFileChooserDialog" --> doFloat,
       appName =? "Gimp" --> doFloat
     ]
     <+> namedScratchpadManageHook myScratchPads -- Allow scratchpads
@@ -115,11 +117,12 @@ myLayout =
 
 myEventHook = mempty
 
-myWorkspaces = ["ε", "ζ", "β", "δ", "η", "θ", "λ"] -- Workspace declaration
+--myWorkspaces = ["", "ε", "ζ", "β", "δ", "η", "θ", "λ"] -- Workspace declaration
+myWorkspaces    = ["w","q","e", "ε", "ζ", "β", "δ"] --Workspace declaration
 --myWorkspaces = ["1", "2", "3", "4", "5", "6", "7", "8"] -- Workspace declaration
 
 myStartupHook = do
-  spawnOnce "xset r rate 200 20"
+  spawnOnce "xset r rate 185 30"
   spawnOnce "xmobar &"
 
 myXmobarPP :: PP
@@ -155,7 +158,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
   M.fromList $
     [ ((modm .|. shiftMask, xK_s), unGrab *> spawn "screenshot"),
       ((modm .|. shiftMask, xK_a), unGrab *> spawn "screenshot2"),
-      ((modm, xK_q), kill), -- rebind restart xmonad to quit current window
+      ((modm, xK_g), kill), -- rebind restart xmonad to quit current window
       -- ("M-S q", ""), -- unbind quit
       -- ("M-S <Return>", Nothing), -- unbind terminal
       ((modm, xK_Return), spawn myTerminal), -- rebind terminal (alacritty)
@@ -190,7 +193,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ((modm .|. controlMask, xK_l), sendMessage Expand)
     ]
     ++ [ ((m .|. modm, k), windows $ f i)
-       | (i, k) <- zip (workspaces conf) [xK_1 .. xK_7],
+       | (i, k) <- zip (workspaces conf) [xK_w, xK_q, xK_e, xK_1, xK_2, xK_3, xK_4],
          (f, m) <- [(W.view, 0), (W.shift, controlMask)]
      ]
     {-

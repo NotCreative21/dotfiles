@@ -4,7 +4,6 @@ vim.opt.cmdheight = 1
 vim.opt.shortmess:append({ c = true })
 vim.opt.hidden = true
 vim.opt.nu = true
-vim.o.relativenumber = true
 vim.opt.updatetime = 100
 vim.opt.encoding = "utf-8"
 vim.opt.termguicolors = true
@@ -23,6 +22,7 @@ vim.cmd("autocmd BufWrite * call g:ChmodOnWrite()")
 vim.cmd("command! -nargs=1 Rename saveas <args> | call delete(expand('#')) | bd #")
 vim.cmd("set viminfo=%,<800,'10,/50,:100,h,f0,n~/.config/viminfo")
 vim.cmd("set viminfo=%,<800,'10,/50,:100,h,f0,n~/.config/viminfo")
+vim.g.lsp_zero_extend_lspconfig = 0
 
 vim.fn.sign_define(
 	"DiagnosticSignError",
@@ -226,7 +226,6 @@ require("lazy").setup({
 					start_in_insert = true,
 
 					-- These are passed to nvim_open_win
-					anchor = "SW",
 					border = "rounded",
 					-- 'editor' and 'win' will default to being centered
 					relative = "cursor",
@@ -322,7 +321,6 @@ require("lazy").setup({
 					-- Options for built-in selector
 					builtin = {
 						-- These are passed to nvim_open_win
-						anchor = "NW",
 						border = "rounded",
 						-- 'editor' and 'win' will default to being centered
 						relative = "editor",
@@ -605,7 +603,7 @@ require("lazy").setup({
 			local MASON_DEFAULT = {
 				-- A list of servers to automatically install if they're not already installed. Example: { "rust_analyzer@nightly", "sumneko_lua" }
 				-- This setting has no relation with the `automatic_installation` setting.
-				ensure_installed = { "rust_analyzer", "tsserver", "tailwindcss", "pylsp", "vuels", "svelte", "lua_ls" },
+				ensure_installed = { "rust_analyzer", "tsserver", "tailwindcss", "svelte", "lua_ls" },
 
 				-- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
 				-- This setting has no relation with the `ensure_installed` setting.
@@ -1161,7 +1159,9 @@ require("lazy").setup({
 							--".null-ls_*",
 						},
 					},
-					follow_current_file = true, -- This will find and focus the file in the active buffer every
+					follow_current_file = {
+						enabled = true, -- This will find and focus the file in the active buffer every
+					},
 					-- time the current file is changed while the tree is open.
 					group_empty_dirs = false, -- when true, empty folders will be grouped together
 					hijack_netrw_behavior = "open_default", -- netrw disabled, opening a directory opens neo-tree
@@ -1186,7 +1186,9 @@ require("lazy").setup({
 					},
 				},
 				buffers = {
-					follow_current_file = true, -- This will find and focus the file in the active buffer every
+					follow_current_file = {
+						enabled = true, -- This will find and focus the file in the active buffer every
+					},
 					-- time the current file is changed while the tree is open.
 					group_empty_dirs = true, -- when true, empty folders will be grouped together
 					show_unloaded = true,

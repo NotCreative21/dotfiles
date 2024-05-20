@@ -184,7 +184,7 @@ cd $CURRENT_PATH
 # bun completions
 #[ -s "/home/sean/.bun/_bun" ] && source "/home/sean/.bun/_bun"
 
-[ -f "/home/sean/.ghcup/env" ] && . "/home/sean/.ghcup/env" # ghcup-env
+export HOME="/home/sean"
 
 export PATH="$PATH:/home/sean/.local/bin"
 export PYENV_ROOT="${HOME}/.config/pyenv"
@@ -195,3 +195,5 @@ if [[ $ZSH_PROFILE ]]; then
      zprof
 fi
 
+
+[ -f "/home/sean/.local/share/ghcup/env" ] && . "/home/sean/.local/share/ghcup/env" # ghcup-env
