@@ -25,6 +25,7 @@ export SHOME="/home/sean"
 export PATH=$PATH:$SHOME/.config/scripts
 export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/home/sean/.config/cabal/bin
+export PATH=$PATH:/usr/local/cuda/bin
 export XDG_CONFIG_HOME="$SHOME/.config"
 export CARGO_HOME="$SHOME/.config/.cargo"
 export RUSTUP_HOME="$SHOME/.config/.rustup"
@@ -44,10 +45,15 @@ export XDG_STATE_HOME="$SHOME/.local/state"
 export XDG_CACHE_HOME="$SHOME/.cache"
 export STACK_ROOT="$XDG_DATA_HOME"/stack
 export STACK_XDG=1
-export GHCUP_USE_XDG_DIRS=1
+export GHCUP_USE_XDG_DIRS=true
 
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib32
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/libtorch/lib
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/tensorrt/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/cudnn/lib
 
 export PATH
 

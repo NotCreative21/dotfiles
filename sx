@@ -50,9 +50,12 @@ export $(dbus-launch)
 export __GL_THREADED_OPTIMIZATIONS=0
 export PATH=/home/sean/.cabal/bin:$PATH
 
-xrandr --output DisplayPort-1 --mode 3840x2160 --rate 120.0 --primary --rotate normal
-xrandr --output HDMI-A-0 --mode 1920x1080 --rate 90 --rotate left --left-of DisplayPort-1
-xrandr --output DisplayPort-2 --mode 2560x1440 --rate 120.0 --rotate right --right-of DisplayPort-1
+xrandr --output DP-0 --primary --mode 2560x1440 --rate 144.0 --rotate normal
+xrandr --output DP-4 --mode 2560x1440 --rate 143.96 --rotate right --pos 2560x-540
+
+#xrandr --output DP-4 --mode 3840x2160 --rate 120.0 --primary --rotate normal
+#xrandr --output DP-2 --mode 2560x1440 --rate 120.0 --rotate right --left-of DP-4
+#xrandr --output DP-0 --mode 2560x1440 --rate 120.0 --rotate left --right-of DP-4
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 #xrandr --output DP-0 --mode 2560x1440 --rate 120.0 --primary --rotate normal
 #xrandr --output HDMI-0 --mode 1920x1080 --rate 120.00 --primary --rotate normal --left-of DP-0

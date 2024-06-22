@@ -118,7 +118,7 @@ myLayout =
 myEventHook = mempty
 
 --myWorkspaces = ["", "ε", "ζ", "β", "δ", "η", "θ", "λ"] -- Workspace declaration
-myWorkspaces    = ["w","q","e", "ε", "ζ", "β", "δ"] --Workspace declaration
+myWorkspaces    = ["q","w","e", "ε", "ζ", "β", "δ", "θ", "λ"] --Workspace declaration
 --myWorkspaces = ["1", "2", "3", "4", "5", "6", "7", "8"] -- Workspace declaration
 
 myStartupHook = do
@@ -193,7 +193,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ((modm .|. controlMask, xK_l), sendMessage Expand)
     ]
     ++ [ ((m .|. modm, k), windows $ f i)
-       | (i, k) <- zip (workspaces conf) [xK_w, xK_q, xK_e, xK_1, xK_2, xK_3, xK_4],
+       | (i, k) <- zip (workspaces conf) [xK_q, xK_w, xK_e, xK_1, xK_2, xK_3, xK_4, xK_5, xK_6],
          (f, m) <- [(W.view, 0), (W.shift, controlMask)]
      ]
     {-

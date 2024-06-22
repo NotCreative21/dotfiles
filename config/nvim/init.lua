@@ -1,3 +1,4 @@
+vim.g.python3_host_prog = "/home/sean/.config/pyenv/shims/python3"
 vim.opt.ttimeoutlen = 2
 vim.opt.mouse = "a"
 vim.opt.cmdheight = 1
@@ -164,8 +165,22 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"nosduco/remote-sshfs.nvim",
-    },
+	  'linux-cultist/venv-selector.nvim',
+	  dependencies = { 'neovim/nvim-lspconfig', 'nvim-telescope/telescope.nvim', 'mfussenegger/nvim-dap-python' },
+	  opts = {
+		-- Your options go here
+		-- name = "venv",
+		-- auto_refresh = false
+	  },
+	  event = 'VeryLazy', -- Optional: needed only if you want to type `:VenvSelect` without a keymapping
+	  keys = {
+		-- Keymap to open VenvSelector to pick a venv.
+		{ '<leader>vs', '<cmd>VenvSelect<cr>' },
+		-- Keymap to retrieve the venv from a cache (the one previously used for the same project directory).
+		{ '<leader>vc', '<cmd>VenvSelectCached<cr>' },
+	  },
+	},
+	"nosduco/remote-sshfs.nvim",
 	{
 		"junegunn/fzf",
 		build = "fzf#install()",
@@ -603,7 +618,7 @@ require("lazy").setup({
 			local MASON_DEFAULT = {
 				-- A list of servers to automatically install if they're not already installed. Example: { "rust_analyzer@nightly", "sumneko_lua" }
 				-- This setting has no relation with the `automatic_installation` setting.
-				ensure_installed = { "rust_analyzer", "tsserver", "tailwindcss", "svelte", "lua_ls" },
+				ensure_installed = { "rust_analyzer", "tsserver", "tailwindcss", "svelte", "lua_ls", "basedpyright" },
 
 				-- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
 				-- This setting has no relation with the `ensure_installed` setting.
@@ -659,6 +674,7 @@ require("lazy").setup({
 			-- load_extension, somewhere after setup function:
 			require("telescope").load_extension("fzf")
 			require("telescope").load_extension("possession")
+			-- require("telescope").load_extension("dir")
 
 			local nvim_lsp = require("lspconfig")
 
@@ -896,7 +912,7 @@ require("lazy").setup({
 			-- local coq = require"coq"
 			-- END UFO
 
-			local servers = { "tsserver", "tailwindcss" }
+			local servers = { "tsserver", "tailwindcss", "basedpyright" }
 
 			for _, lsp in pairs(servers) do
 				require("lspconfig")[lsp].setup({
@@ -905,7 +921,10 @@ require("lazy").setup({
 			end
 		end,
 	},
-
+	{
+		"dccsillag/magma-nvim",
+		build = ":UpdateRemotePlugins"
+	},
 	"wakatime/vim-wakatime",
 	{
 		"windwp/nvim-autopairs",
@@ -940,69 +959,6 @@ require("lazy").setup({
 	},
 	"lambdalisue/suda.vim",
 	"nvim-lua/plenary.nvim",
-	{
-		"sindrets/winshift.nvim",
-		config = function()
-			require("winshift").setup({
-				highlight_moving_win = true, -- Highlight the window being moved
-				focused_hl_group = "Visual", -- The highlight group used for the moving window
-				moving_win_options = {
-					-- These are local options applied to the moving window while it's
-					-- being moved. They are unset when you leave Win-Move mode.
-					wrap = false,
-					cursorline = false,
-					cursorcolumn = false,
-					colorcolumn = "",
-				},
-				keymaps = {
-					disable_defaults = false, -- Disable the default keymaps
-					win_move_mode = {
-						["h"] = "left",
-						["j"] = "down",
-						["k"] = "up",
-						["l"] = "right",
-						["H"] = "far_left",
-						["J"] = "far_down",
-						["K"] = "far_up",
-						["L"] = "far_right",
-						["<left>"] = "left",
-						["<down>"] = "down",
-						["<up>"] = "up",
-						["<right>"] = "right",
-						["<S-left>"] = "far_left",
-						["<S-down>"] = "far_down",
-						["<S-up>"] = "far_up",
-						["<S-right>"] = "far_right",
-					},
-				},
-				---A function that should prompt the user to select a window.
-				---
-				---The window picker is used to select a window while swapping windows with
-				---`:WinShift swap`.
-				---@return integer? winid # Either the selected window ID, or `nil` to
-				---   indicate that the user cancelled / gave an invalid selection.
-				window_picker = function()
-					return require("winshift.lib").pick_window({
-						-- A string of chars used as identifiers by the window picker.
-						picker_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-						filter_rules = {
-							-- This table allows you to indicate to the window picker that a window
-							-- should be ignored if its buffer matches any of the following criteria.
-							cur_win = true, -- Filter out the current window
-							floats = true, -- Filter out floating windows
-							filetype = {}, -- List of ignored file types
-							buftype = {}, -- List of ignored buftypes
-							bufname = {}, -- List of vim regex patterns matching ignored buffer names
-						},
-						---A function used to filter the list of selectable windows.
-						---@param winids integer[] # The list of selectable window IDs.
-						---@return integer[] filtered # The filtered list of window IDs.
-						filter_func = nil,
-					})
-				end,
-			})
-		end,
-	},
 	{
 		"norcalli/nvim-colorizer.lua",
 		config = function()
@@ -1288,10 +1244,9 @@ map("n", "gsn", ":SSave<ENTER>", { silent = true })
 map("n", "<C-s>", "/\\c")
 map("v", "<C-s>", "gc")
 map("n", "<C-p>", ':lua require("notify").dismiss()<ENTER>', { silent = true })
-map("n", "<C-W>", ":WinShift<ENTER>")
 map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
 map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
--- map("n", "K", "vim.diagnostic.open_float", { silent = true })
+map("n", "K", "vim.diagnostic.open_float", { silent = true })
 require('remote-sshfs').setup({})
 vim.cmd(":set guicursor=")
 -- Workaround some broken plugins which set guicursor indiscriminately.
@@ -1304,6 +1259,7 @@ vim.cmd("let g:indentLine_fileTypeExclude = ['dashboard']")
 vim.cmd(
 	"let g:better_whitespace_filetypes_blacklist = ['dashboard', 'terminal', 'neo-tree', 'md', 'diff', 'git', 'gitcommit', 'unite', 'qf', 'help', 'markdown', 'fugitive', 'zsh', 'bash', '', 'json' ]"
 )
+vim.cmd("g:poetv_auto_activate = 1")
 vim.cmd(":set nomodeline")
 vim.g.strip_whitespace_confirm = 0
 vim.g.current_line_whitespace_disabled_hard = 0
@@ -1359,3 +1315,30 @@ vim.api.nvim_create_user_command("Format", function(args)
 	end
 	require("conform").format({ async = true, lsp_fallback = true, range = range })
 end, { range = true })
+
+function MagmaInitPython()
+    vim.cmd[[
+    :MagmaInit python3
+    :MagmaEvaluateArgument a=5
+    ]]
+end
+
+function MagmaInitCSharp()
+    vim.cmd[[
+    :MagmaInit .net-csharp
+    :MagmaEvaluateArgument Microsoft.DotNet.Interactive.Formatting.Formatter.SetPreferredMimeTypesFor(typeof(System.Object),"text/plain");
+    ]]
+end
+
+function MagmaInitFSharp()
+    vim.cmd[[
+    :MagmaInit .net-fsharp
+    :MagmaEvaluateArgument Microsoft.DotNet.Interactive.Formatting.Formatter.SetPreferredMimeTypesFor(typeof<System.Object>,"text/plain")
+    ]]
+end
+
+vim.cmd[[
+:command MagmaInitPython lua MagmaInitPython()
+:command MagmaInitCSharp lua MagmaInitCSharp()
+:command MagmaInitFSharp lua MagmaInitFSharp()
+]]

@@ -195,5 +195,14 @@ if [[ $ZSH_PROFILE ]]; then
      zprof
 fi
 
+export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
+
 
 [ -f "/home/sean/.local/share/ghcup/env" ] && . "/home/sean/.local/share/ghcup/env" # ghcup-env
+# pnpm
+export PNPM_HOME="/home/sean/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end

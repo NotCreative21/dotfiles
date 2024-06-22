@@ -4,7 +4,7 @@ Config { overrideRedirect = True
        , fgColor  = "#f8f8f2"
        , position = TopW L 100
        , commands = [ Run Weather "KATL"
-                        [ "--template", "<weather> <tempF>°F"
+                        [ "--template", "<skyCondition> <tempF>°F"
                         , "-L", "0"
                         , "-H", "25"
                         , "--low"   , "lightblue"
@@ -23,5 +23,5 @@ Config { overrideRedirect = True
                     ]
        , sepChar  = "%"
        , alignSep = "}{"
-       , template = "%XMonadLog% }{ %alsa:default:Master% | %cpu% | %memory% * %swap% | %RYY% | %date% "
+       , template = "%XMonadLog% }{ %cpu% | %memory% | %KATL% | %date% "
        }
