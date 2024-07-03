@@ -130,7 +130,7 @@ SAVEHIST=30000
 HISTFILE=~/.cache/zsh/history
 
 export PATH=$PATH:/home/sean/.config/scripts/
-
+export LANG="en_US.UTF-8"
 # move coredumps
 #export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 # compinit -d ~/.cache/zsh/zcompdump-$HOST
@@ -185,6 +185,15 @@ cd $CURRENT_PATH
 #[ -s "/home/sean/.bun/_bun" ] && source "/home/sean/.bun/_bun"
 
 export HOME="/home/sean"
+
+export GHCUP_USE_XDG_DIRS=true
+export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+export HISTFILE="${XDG_STATE_HOME}"/bash/history
+export KERAS_HOME="${XDG_STATE_HOME}/keras"
+export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
+alias nvidia-settings="nvidia-settings --config=$XDG_CONFIG_HOME/nvidia/settings"
+alias yarn="yarn --use-yarnrc $XDG_CONFIG_HOME/yarn/config"
+
 
 export PATH="$PATH:/home/sean/.local/bin"
 export PYENV_ROOT="${HOME}/.config/pyenv"

@@ -32,6 +32,7 @@ export RUSTUP_HOME="$SHOME/.config/.rustup"
 export CABAL_DIR="$SHOME/.config/cabal"
 export LESSHISTFILE=-
 export PULSE_COOKIE="$SHOME/.config/"
+export LANG="en_US.UTF-8"
 export COLORTERM="truecolor"
 export _JAVA_AWT_WM_NONREPARENTING=1
 export PYENV_ROOT="$SHOME/.config"
@@ -46,6 +47,7 @@ export XDG_CACHE_HOME="$SHOME/.cache"
 export STACK_ROOT="$XDG_DATA_HOME"/stack
 export STACK_XDG=1
 export GHCUP_USE_XDG_DIRS=true
+export yarn --use-yarnrc $XDG_CONFIG_HOME/yarn/config
 
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib32
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib

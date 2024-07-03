@@ -170,7 +170,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ((modm .|. shiftMask, xK_l), spawn "sleep 0.5;xset dpms force off"),
       ((modm .|. shiftMask, xK_v), spawn "sleep 0.5;xdotool type $(xclip -o)"),
       ((0, xF86XK_AudioRaiseVolume), unGrab *> spawn "pactl set-sink-volume @DEFAULT_SINK@ +10%"), -- don't want to focus on any of these
-      ((0, xF86XK_AudioLowerVolume), unGrab *> spawn "pactl set-sink-volume @DEFAULT_SINK@ +10%"),
+      ((0, xF86XK_AudioLowerVolume), unGrab *> spawn "pactl set-sink-volume @DEFAULT_SINK@ -10%"),
       ((0, xF86XK_AudioPlay), unGrab *> spawn "playerctl play-pause"),
       ((0, xF86XK_AudioNext), unGrab *> spawn "playerctl next"),
       ((0, xF86XK_AudioPrev), unGrab *> spawn "playerctl previous"),

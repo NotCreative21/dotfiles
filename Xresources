@@ -6,7 +6,7 @@ Xcursor.size: 6
 *.cursorColor:  #f0f0f0
 
 ! black
-*.color0:       #0f101a
+*.color0:       #14151a
 *.color8:       #6b7b88
 
 ! red

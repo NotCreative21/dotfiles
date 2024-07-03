@@ -50,8 +50,8 @@ export $(dbus-launch)
 export __GL_THREADED_OPTIMIZATIONS=0
 export PATH=/home/sean/.cabal/bin:$PATH
 
-xrandr --output DP-0 --primary --mode 2560x1440 --rate 144.0 --rotate normal
-xrandr --output DP-4 --mode 2560x1440 --rate 143.96 --rotate right --pos 2560x-540
+xrandr --output DP-4 --primary --mode 2560x1440 --rate 144.0 --rotate normal
+xrandr --output DP-0 --mode 2560x1440 --rate 144.00 --rotate normal --left-of DP-4
 
 #xrandr --output DP-4 --mode 3840x2160 --rate 120.0 --primary --rotate normal
 #xrandr --output DP-2 --mode 2560x1440 --rate 120.0 --rotate right --left-of DP-4
@@ -65,7 +65,7 @@ gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 
 setwall $(cat /home/sean/.config/scripts/curwall)
 
-xset r rate 200 20
+xset r rate 220 20
 dunst > /dev/null 2>&1 &
 xrdb /home/sean/.config/Xresources
 xrdb -merge /home/sean/.config/Xdefaults

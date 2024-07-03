@@ -1336,6 +1336,10 @@ function MagmaInitFSharp()
     :MagmaEvaluateArgument Microsoft.DotNet.Interactive.Formatting.Formatter.SetPreferredMimeTypesFor(typeof<System.Object>,"text/plain")
     ]]
 end
+-- move selected lines up one line
+vim.cmd("xnoremap <somekey>  :m-2<CR>gv=gv")
+-- move selected lines down one line
+vim.cmd("xnoremap <otherkey> :m'>+<CR>gv=gv")
 
 vim.cmd[[
 :command MagmaInitPython lua MagmaInitPython()
