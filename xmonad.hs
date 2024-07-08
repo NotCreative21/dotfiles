@@ -19,11 +19,10 @@ import XMonad.Layout.CenteredMaster (centerMaster)
 import XMonad.Layout.ComboP (Property (ClassName), combineTwoP)
 import XMonad.Layout.Combo (combineTwo)
 import XMonad.Layout.Grid (Grid (Grid))
-import XMonad.Layout.NoBorders (noBorders, smartBorders)
+import XMonad.Layout.NoBorders (noBorders)
 import XMonad.Layout.OneBig (OneBig (OneBig))
 import XMonad.Layout.PerScreen (ifWider)
 import XMonad.Layout.Renamed (Rename (Replace), renamed)
-import XMonad.Layout.Spacing (Spacing (smartBorder), smartSpacing)
 import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
 import XMonad.Layout.ZoomRow (zoomRow)
 import qualified XMonad.StackSet as W
@@ -49,7 +48,7 @@ myFocusFollowsMouse = True
 
 myClickJustFocuses = False
 
-myBorderWidth = 1
+myBorderWidth = 0
 
 -- alt key
 myModMask = mod1Mask
@@ -93,7 +92,8 @@ myLogHook =
     <> currentWorkspaceOnTop
     <> refocusLastLogHook
 
-myLayoutHook = ifWider 1440 myLayout $ Mirror zoomRow
+-- myLayoutHook = ifWider 1440 myLayout $ Mirror zoomRow
+myLayoutHook = myLayout
 
 myLayout =
   name "CorneredMstr" corner -- Master is in the top left, with subs surrounding it
@@ -104,13 +104,13 @@ myLayout =
     -- \||| name "Crunch" crunch -- Laid out horizontally/vertically, unfocused are compressed
     ||| name "Bighead" bighead -- Two layouts, Grid on left, CorneredMstr on right
   where
-    name n = renamed [Replace n] . smartSpacing 2 -- Enable smart spacing for all custom layouts
+    name n = renamed [Replace n] -- Enable smart spacing for all custom layouts
     corner = OneBig (6 / 9) (6 / 9) -- OneBig (ScreenWidth) (ScreenHeight)
     twocol = Tall 2 (3 / 100) (1 / 2) -- Tall (# of masters) (Delta) (Ratio)
     tricol = ThreeColMid 2 (3 / 100) (1 / 2) -- Same as above, modified to have 3 columns
     -- crunch = noBorders (Mirror Accordion) -- Mirrored to the longest portion of screen
     stacked = zoomRow -- Basically accordion
-    center = smartBorders (centerMaster (noBorders Grid)) -- Smart borders for master, none for subs
+    center = centerMaster (noBorders Grid) -- Smart borders for master, none for subs
     portr = OneBig (1 / 1) (1 / 3) -- OneBig (ScreenWidth) (ScreenHeight)
     lands = OneBig (6 / 9) (5 / 8) -- OneBig (ScreenWidth) (ScreenHeight)
     bighead = combineTwo (Tall 1 (3 / 100) (5 / 8)) (portr) (stacked)
@@ -130,7 +130,7 @@ myXmobarPP =
   def
     { ppSep = magenta " • ",
       ppTitleSanitize = xmobarStrip,
-      ppCurrent = wrap " " "" . xmobarBorder "Top" "#8be9fd" 2,
+      ppCurrent = wrap " " "" . xmobarBorder "Top" "#8be9fd" 9,
       ppHidden = white . wrap " " "",
       ppHiddenNoWindows = lowWhite . wrap " " "",
       ppUrgent = red . wrap (yellow "!") (yellow "!"),
@@ -213,7 +213,7 @@ main = do
       { terminal = myTerminal,
         focusFollowsMouse = myFocusFollowsMouse,
         clickJustFocuses = myClickJustFocuses,
-        borderWidth = 1,
+        borderWidth = 0,
         modMask = myModMask,
         focusedBorderColor = "#E8C381",
         normalBorderColor = "#257283",
