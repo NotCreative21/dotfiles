@@ -180,7 +180,7 @@ require("lazy").setup({
 		{ '<leader>vc', '<cmd>VenvSelectCached<cr>' },
 	  },
 	},
-	"nosduco/remote-sshfs.nvim",
+	--"nosduco/remote-sshfs.nvim",
 	{
 		"junegunn/fzf",
 		build = "fzf#install()",
@@ -489,6 +489,7 @@ require("lazy").setup({
 			})
 		end,
 	},
+	--[[
 	{
 		"ggandor/flit.nvim",
 		config = function()
@@ -502,7 +503,7 @@ require("lazy").setup({
 				opts = {},
 			})
 		end,
-	},
+	},]]--
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
@@ -921,10 +922,6 @@ require("lazy").setup({
 			end
 		end,
 	},
-	{
-		"dccsillag/magma-nvim",
-		build = ":UpdateRemotePlugins"
-	},
 	"wakatime/vim-wakatime",
 	{
 		"windwp/nvim-autopairs",
@@ -957,6 +954,7 @@ require("lazy").setup({
 			})
 		end,
 	},
+	"petobens/poet-v",
 	"lambdalisue/suda.vim",
 	"nvim-lua/plenary.nvim",
 	{
@@ -1247,7 +1245,7 @@ map("n", "<C-p>", ':lua require("notify").dismiss()<ENTER>', { silent = true })
 map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
 map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
 map("n", "K", "vim.diagnostic.open_float", { silent = true })
-require('remote-sshfs').setup({})
+--require('remote-sshfs').setup({})
 vim.cmd(":set guicursor=")
 -- Workaround some broken plugins which set guicursor indiscriminately.
 vim.cmd(":autocmd OptionSet guicursor noautocmd set guicursor=")
@@ -1259,7 +1257,7 @@ vim.cmd("let g:indentLine_fileTypeExclude = ['dashboard']")
 vim.cmd(
 	"let g:better_whitespace_filetypes_blacklist = ['dashboard', 'terminal', 'neo-tree', 'md', 'diff', 'git', 'gitcommit', 'unite', 'qf', 'help', 'markdown', 'fugitive', 'zsh', 'bash', '', 'json' ]"
 )
-vim.cmd("g:poetv_auto_activate = 1")
+vim.cmd("let g:poetv_auto_activate = 1")
 vim.cmd(":set nomodeline")
 vim.g.strip_whitespace_confirm = 0
 vim.g.current_line_whitespace_disabled_hard = 0

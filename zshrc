@@ -188,6 +188,7 @@ export HOME="/home/sean"
 
 export GHCUP_USE_XDG_DIRS=true
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
 export HISTFILE="${XDG_STATE_HOME}"/bash/history
 export KERAS_HOME="${XDG_STATE_HOME}/keras"
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
@@ -204,7 +205,6 @@ if [[ $ZSH_PROFILE ]]; then
      zprof
 fi
 
-export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 
 
 [ -f "/home/sean/.local/share/ghcup/env" ] && . "/home/sean/.local/share/ghcup/env" # ghcup-env

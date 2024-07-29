@@ -101,6 +101,7 @@ myLayout =
     ||| name "TwoCol" twocol -- Three tiled columns, honors masters
     ||| name "TriCol" tricol -- Three tiled columns, honors masters
     ||| name "Stacked" stacked -- Laid out horizontally/vertically
+    ||| name "UnStack" unstack -- Laid out horizontally/vertically
     -- \||| name "Crunch" crunch -- Laid out horizontally/vertically, unfocused are compressed
     ||| name "Bighead" bighead -- Two layouts, Grid on left, CorneredMstr on right
   where
@@ -109,6 +110,7 @@ myLayout =
     twocol = Tall 2 (3 / 100) (1 / 2) -- Tall (# of masters) (Delta) (Ratio)
     tricol = ThreeColMid 2 (3 / 100) (1 / 2) -- Same as above, modified to have 3 columns
     -- crunch = noBorders (Mirror Accordion) -- Mirrored to the longest portion of screen
+    unstack = Mirror zoomRow
     stacked = zoomRow -- Basically accordion
     center = centerMaster (noBorders Grid) -- Smart borders for master, none for subs
     portr = OneBig (1 / 1) (1 / 3) -- OneBig (ScreenWidth) (ScreenHeight)
@@ -207,6 +209,7 @@ main :: IO ()
 main = do
   nScreens <- countScreens
   xmonad
+    $ ewmh
     $ ewmhFullscreen
     . withEasySB (statusBarProp "xmobar ~/.config/xmonad/xmobarrc" (pure myXmobarPP)) defToggleStrutsKey
     $ def

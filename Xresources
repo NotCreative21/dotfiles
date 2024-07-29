@@ -1,4 +1,4 @@
-Xcursor.size: 6
+Xcursor.size: 4
 
 ! special
 *.foreground:   #f0f0f0
@@ -52,4 +52,4 @@ URxvt.scrollBar:                   false
 URxvt.font:                        xft:Terminus:size=11:antilias=true
 URxvt*depth:                       32
 URxvt*saveLines:                   10000
-Xft.dpi: 96
+Xft.dpi: 84

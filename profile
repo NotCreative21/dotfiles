@@ -21,6 +21,7 @@ appendpath '/bin'
 unset appendpath
 
 export TZ="America/New_York"
+export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 export SHOME="/home/sean"
 export PATH=$PATH:$SHOME/.config/scripts
 export PATH=$PATH:/usr/local/bin
@@ -48,6 +49,8 @@ export STACK_ROOT="$XDG_DATA_HOME"/stack
 export STACK_XDG=1
 export GHCUP_USE_XDG_DIRS=true
 export yarn --use-yarnrc $XDG_CONFIG_HOME/yarn/config
+export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
+export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
 
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib32
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib

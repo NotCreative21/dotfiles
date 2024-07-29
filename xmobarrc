@@ -9,13 +9,13 @@ Config { overrideRedirect = True
                         , "-H", "25"
                         , "--low"   , "lightblue"
                         , "--normal", "#c6d6f7"
-                        , "--high"  , "red"
+                        , "--high"  , "#f57e76"
                         ] 36000
                     , Run Cpu
                         [ "-L", "10"
                         , "-H", "75"
-                        , "--high"  , "red"
-                        , "--normal", "green"
+                        , "--high"  , "#f57e76"
+                        , "--normal", "#acfab9"
                         ] 10
                     , Run Memory ["--template", "Mem: <usedratio>%"] 10
                     , Run Date "%a %Y-%m-%d <fc=#c6d6f7>%H:%M</fc>" "date" 10
