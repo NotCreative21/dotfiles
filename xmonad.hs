@@ -23,8 +23,8 @@ import XMonad.Layout.NoBorders (noBorders)
 import XMonad.Layout.OneBig (OneBig (OneBig))
 import XMonad.Layout.PerScreen (ifWider)
 import XMonad.Layout.Renamed (Rename (Replace), renamed)
-import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
 import XMonad.Layout.ZoomRow (zoomRow)
+import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
 import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig
 import XMonad.Util.Loggers (logTitles)
@@ -42,7 +42,7 @@ myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm]
         t = (1 - h) / 2
         l = (1 - h) / 2
 
-myTerminal = "tabbed -r 2 st -w '' -e zsh"
+myTerminal = "alacritty"
 
 myFocusFollowsMouse = True
 
@@ -97,25 +97,25 @@ myLayoutHook = myLayout
 
 myLayout =
   name "CorneredMstr" corner -- Master is in the top left, with subs surrounding it
-    ||| name "CenteredMstr" center -- Master is centeted in screen, over grid
+    -- ||| name "CenteredMstr" center -- Master is centeted in screen, over grid
     ||| name "TwoCol" twocol -- Three tiled columns, honors masters
     ||| name "TriCol" tricol -- Three tiled columns, honors masters
     ||| name "Stacked" stacked -- Laid out horizontally/vertically
-    ||| name "UnStack" unstack -- Laid out horizontally/vertically
+    -- ||| name "UnStack" unstack -- Laid out horizontally/vertically
     -- \||| name "Crunch" crunch -- Laid out horizontally/vertically, unfocused are compressed
-    ||| name "Bighead" bighead -- Two layouts, Grid on left, CorneredMstr on right
+    -- ||| name "Bighead" bighead -- Two layouts, Grid on left, CorneredMstr on right
   where
     name n = renamed [Replace n] -- Enable smart spacing for all custom layouts
     corner = OneBig (6 / 9) (6 / 9) -- OneBig (ScreenWidth) (ScreenHeight)
     twocol = Tall 2 (3 / 100) (1 / 2) -- Tall (# of masters) (Delta) (Ratio)
     tricol = ThreeColMid 2 (3 / 100) (1 / 2) -- Same as above, modified to have 3 columns
     -- crunch = noBorders (Mirror Accordion) -- Mirrored to the longest portion of screen
-    unstack = Mirror zoomRow
+    -- unstack = Mirror zoomRow
     stacked = zoomRow -- Basically accordion
-    center = centerMaster (noBorders Grid) -- Smart borders for master, none for subs
-    portr = OneBig (1 / 1) (1 / 3) -- OneBig (ScreenWidth) (ScreenHeight)
-    lands = OneBig (6 / 9) (5 / 8) -- OneBig (ScreenWidth) (ScreenHeight)
-    bighead = combineTwo (Tall 1 (3 / 100) (5 / 8)) (portr) (stacked)
+    -- center = centerMaster (noBorders Grid) -- Smart borders for master, none for subs
+    -- portr = OneBig (1 / 1) (1 / 3) -- OneBig (ScreenWidth) (ScreenHeight)
+    -- lands = OneBig (6 / 9) (5 / 8) -- OneBig (ScreenWidth) (ScreenHeight)
+    -- bighead = combineTwo (Tall 1 (3 / 100) (5 / 8)) (portr) (stacked)
 
 myEventHook = mempty
 
@@ -216,10 +216,10 @@ main = do
       { terminal = myTerminal,
         focusFollowsMouse = myFocusFollowsMouse,
         clickJustFocuses = myClickJustFocuses,
-        borderWidth = 0,
+        borderWidth = 1,
         modMask = myModMask,
-        focusedBorderColor = "#E8C381",
-        normalBorderColor = "#257283",
+        focusedBorderColor = "#757575",
+        normalBorderColor = "#191919",
         layoutHook = myLayoutHook,
         manageHook = myManageHook,
         handleEventHook = myEventHook,
