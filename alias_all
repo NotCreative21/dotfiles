@@ -92,6 +92,8 @@ export BUN_INSTALL="/home/sean/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export CARGO_HOME="/home/sean/.config/.cargo/"
 export MYVIMRC="/home/sean/.config/nvim/init.vim"
+export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+alias nvidia-settings="nvidia-settings --config="$XDG_CONFIG_HOME"/nvidia/settings"
 
 
 XDG_DESKTOP_DIR="$HOME/Desktop"

@@ -165,20 +165,20 @@ require("lazy").setup({
 		end,
 	},
 	{
-	  'linux-cultist/venv-selector.nvim',
-	  dependencies = { 'neovim/nvim-lspconfig', 'nvim-telescope/telescope.nvim', 'mfussenegger/nvim-dap-python' },
-	  opts = {
-		-- Your options go here
-		-- name = "venv",
-		-- auto_refresh = false
-	  },
-	  event = 'VeryLazy', -- Optional: needed only if you want to type `:VenvSelect` without a keymapping
-	  keys = {
-		-- Keymap to open VenvSelector to pick a venv.
-		{ '<leader>vs', '<cmd>VenvSelect<cr>' },
-		-- Keymap to retrieve the venv from a cache (the one previously used for the same project directory).
-		{ '<leader>vc', '<cmd>VenvSelectCached<cr>' },
-	  },
+	  "linux-cultist/venv-selector.nvim",
+		dependencies = {
+		  "neovim/nvim-lspconfig", 
+		  "mfussenegger/nvim-dap", "mfussenegger/nvim-dap-python", --optional
+		  { "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
+		},
+	  lazy = true,
+	  branch = "regexp", -- This is the regexp branch, use this for the new version
+	  config = function()
+		  require("venv-selector").setup()
+		end,
+		keys = {
+		  { ",v", "<cmd>VenvSelect<cr>" },
+		},
 	},
 	--"nosduco/remote-sshfs.nvim",
 	{
@@ -370,7 +370,7 @@ require("lazy").setup({
 					},
 
 					-- Used to override format_item. See :help dressing-format
-					format_item_override = {},
+					-- format_item_override = {},
 
 					-- see :help dressing_get_config
 					get_config = nil,
@@ -397,67 +397,57 @@ require("lazy").setup({
 	{
 		"lewis6991/gitsigns.nvim",
 		config = function()
-			require("gitsigns").setup({
-				signs = {
-					add = { hl = "GitSignsAdd", text = "│", numhl = "GitSignsAddNr", linehl = "GitSignsAddLn" },
-					change = {
-						hl = "GitSignsChange",
-						text = "│",
-						numhl = "GitSignsChangeNr",
-						linehl = "GitSignsChangeLn",
-					},
-					delete = {
-						hl = "GitSignsDelete",
-						text = "_",
-						numhl = "GitSignsDeleteNr",
-						linehl = "GitSignsDeleteLn",
-					},
-					topdelete = {
-						hl = "GitSignsDelete",
-						text = "‾",
-						numhl = "GitSignsDeleteNr",
-						linehl = "GitSignsDeleteLn",
-					},
-					changedelete = {
-						hl = "GitSignsChange",
-						text = "~",
-						numhl = "GitSignsChangeNr",
-						linehl = "GitSignsChangeLn",
-					},
-				},
-				signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-				numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
-				linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
-				word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
-				watch_gitdir = {
-					interval = 4000,
-					follow_files = false,
-				},
-				attach_to_untracked = true,
-				current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
-				current_line_blame_opts = {
+			require('gitsigns').setup {
+				  signs = {
+					add          = { text = '┃' },
+					change       = { text = '┃' },
+					delete       = { text = '_' },
+					topdelete    = { text = '‾' },
+					changedelete = { text = '~' },
+					untracked    = { text = '┆' },
+				  },
+				  signs_staged = {
+					add          = { text = '┃' },
+					change       = { text = '┃' },
+					delete       = { text = '_' },
+					topdelete    = { text = '‾' },
+					changedelete = { text = '~' },
+					untracked    = { text = '┆' },
+				  },
+				  signs_staged_enable = true,
+				  signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
+				  numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
+				  linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
+				  word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+				  watch_gitdir = {
+				  interval = 4000,
+					follow_files = true
+				  },
+				  auto_attach = true,
+				  attach_to_untracked = false,
+				  current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
+				  current_line_blame_opts = {
 					virt_text = true,
-					virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
-					delay = 1000,
+					virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+					delay = 4000,
 					ignore_whitespace = false,
-				},
-				current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
-				sign_priority = 6,
-				update_debounce = 5000,
-				status_formatter = nil, -- Use default
-				max_file_length = 15000, -- Disable if file is longer than this (in lines)
-				preview_config = {
+					virt_text_priority = 100,
+					use_focus = true,
+				  },
+				  current_line_blame_formatter = '<author>, <author_time:%R> - <summary>',
+				  sign_priority = 6,
+				  update_debounce = 1000,
+				  status_formatter = nil, -- Use default
+				  max_file_length = 20000, -- Disable if file is longer than this (in lines)
+				  preview_config = {
 					-- Options passed to nvim_open_win
-					border = "rounded",
-					style = "",
-					relative = "cursor",
+					border = 'single',
+					style = 'minimal',
+					relative = 'cursor',
 					row = 0,
-					col = 1,
-				},
-				yadm = {
-					enable = false,
-				},
-			})
+					col = 1
+				  },
+				}
 		end,
 	},
 	{
@@ -619,7 +609,7 @@ require("lazy").setup({
 			local MASON_DEFAULT = {
 				-- A list of servers to automatically install if they're not already installed. Example: { "rust_analyzer@nightly", "sumneko_lua" }
 				-- This setting has no relation with the `automatic_installation` setting.
-				ensure_installed = { "rust_analyzer", "tsserver", "tailwindcss", "svelte", "lua_ls", "basedpyright" },
+				ensure_installed = { "rust_analyzer", "tailwindcss", "svelte", "lua_ls", "basedpyright" },
 
 				-- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
 				-- This setting has no relation with the `ensure_installed` setting.
@@ -913,7 +903,7 @@ require("lazy").setup({
 			-- local coq = require"coq"
 			-- END UFO
 
-			local servers = { "tsserver", "tailwindcss", "basedpyright" }
+			local servers = { "ts_lint", "tailwindcss", "basedpyright" }
 
 			for _, lsp in pairs(servers) do
 				require("lspconfig")[lsp].setup({
