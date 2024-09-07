@@ -31,16 +31,24 @@ import XMonad.Util.Loggers (logTitles)
 import XMonad.Util.NamedScratchpad (NamedScratchpad (NS), customFloating, namedScratchpadAction, namedScratchpadManageHook)
 import XMonad.Util.SpawnOnce
 
-myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm]
+myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm, NS "terminal2" spawnTerm2 findTerm2 manageTerm2]
   where
     spawnTerm = myTerminal ++ " --class scratchpad"
+    spawnTerm2 = myTerminal ++ " --class scratchpad2"
     findTerm = className =? "scratchpad" -- classname "scratchpad" is the term
+    findTerm2 = className =? "scratchpad2" -- classname "scratchpad2" is the term
     manageTerm = customFloating $ W.RationalRect l t w h -- using the geometry below
       where
-        h = 0.3
+        h = 0.5
         w = 0.3
-        t = (1 - h) / 2
+        t = (1 - h) / 4
         l = (1 - h) / 2
+    manageTerm2 = customFloating $ W.RationalRect l t w h -- using the geometry below
+      where
+        h = 0.5
+        w = 0.3
+        t = (1 - h) / 4
+        l = (1 - h) / 1.5
 
 myTerminal = "alacritty"
 
@@ -189,6 +197,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) =
       ((modm, xK_s), sendMessage $ IncMasterN 1),
       ((modm, xK_a), sendMessage $ IncMasterN (-1)),
       ((modm, xK_t), namedScratchpadAction myScratchPads "terminal"),
+      ((modm, xK_r), namedScratchpadAction myScratchPads "terminal2"),
       ((modm, xK_space), spawn "rofi -show combi -sidebar-mode 2>&1 | tee ~/.local/log/rofi"),
       ((modm .|. shiftMask, xK_space), withFocused toggleFloat),
       ((modm .|. controlMask, xK_h), sendMessage Shrink),
