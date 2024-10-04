@@ -1,0 +1,73 @@
+configuration {
+  font: "Iosevka Nerd Font Medium 10";
+
+  timeout {
+    delay: 10;
+    action: "kb-cancel";
+  }
+}
+
+* {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+
+  bg: #191919;
+  bg-alt: #20212C;
+  fg: #c6d6f7;
+  fg-alt: #5D5E72;
+
+  background-color: @bg;
+  text-color: @fg;
+  border-color: @bg-alt;
+  accent-color: @bg-alt;
+}
+
+window {
+  width: 30%;
+  border-color: @fg-alt;
+  padding: 2px;
+  transparency: "real";
+}
+
+mainbox {
+  children: [inputbar, listview];
+}
+
+inputbar {
+  children: [entry];
+}
+
+entry {
+  padding: 2px;
+  text-color: @fg;
+}
+
+listview {
+  lines: 10;
+  scrollbar: true;
+}
+
+scrollbar {
+  background-color: @bg-alt;
+  handle-color: @fg;
+  margin: 0 0 0 2px;
+}
+
+element {
+  children: [element-text];
+  background-color: @bg;
+  text-color: @fg;
+}
+
+element-text {
+  padding: 10px;
+  background-color: @bg;
+  text-color: @fg;
+}
+
+element-text selected {
+  background-color: @bg-alt;
+  text-color: @fg;
+}

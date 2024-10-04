@@ -21,6 +21,7 @@ cp /home/sean/.config/sean/walls/* ./sean/walls
 cp /usr/src/linux/.config .
 mv .config kernel.config
 cp /home/sean/.config/picom.conf ./config/
+cp /home/sean/.config/rofi/config.rasi ./config/rofi/
 cp /home/sean/.doom.d/init.el ./doom.d/
 cp /home/sean/.config/xmonad/xmonad.hs .
 cp /home/sean/.config/xmonad/xmobarrc .
