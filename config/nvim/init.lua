@@ -8,7 +8,12 @@ vim.opt.nu = true
 vim.opt.updatetime = 100
 vim.opt.encoding = "utf-8"
 vim.opt.termguicolors = true
-vim.o.showtabline = 2
+vim.opt.showtabline = 2
+-- THEME
+vim.cmd [[
+	silent! colorscheme snow
+	hi Normal guibg=#191919
+]]
 vim.cmd("set signcolumn=number")
 vim.cmd("set t_Co=256")
 vim.cmd("set nobackup")
@@ -165,19 +170,20 @@ require("lazy").setup({
 		end,
 	},
 	{
-	  "linux-cultist/venv-selector.nvim",
+		"linux-cultist/venv-selector.nvim",
 		dependencies = {
-		  "neovim/nvim-lspconfig",
-		  "mfussenegger/nvim-dap", "mfussenegger/nvim-dap-python", --optional
-		  { "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
+			"neovim/nvim-lspconfig",
+			"mfussenegger/nvim-dap",
+			"mfussenegger/nvim-dap-python", --optional
+			{ "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
 		},
-	  lazy = true,
-	  branch = "regexp", -- This is the regexp branch, use this for the new version
-	  config = function()
-		  require("venv-selector").setup()
+		lazy = true,
+		branch = "regexp", -- This is the regexp branch, use this for the new version
+		config = function()
+			require("venv-selector").setup()
 		end,
 		keys = {
-		  { ",v", "<cmd>VenvSelect<cr>" },
+			{ ",v", "<cmd>VenvSelect<cr>" },
 		},
 	},
 	--"nosduco/remote-sshfs.nvim",
@@ -384,11 +390,13 @@ require("lazy").setup({
 			require("conform").setup({
 				formatters_by_ft = {
 					lua = { "stylua" },
+					go = { "goimports", "gofmt" },
 					-- Conform will run multiple formatters sequentially
 					python = { "isort", "black" },
 					-- Use a sub-list to run only the first available formatter
-					javascript = { { "prettierd", "prettier" } },
-					rust = { "rustfmt", args = { "--edition", "2021" }, },
+					javascript = { "prettierd", "prettier", stop_after_first = true },
+					html = { "prettierd", "prettier", stop_after_first = true },
+					rust = { "rustfmt", args = { "--edition", "2021" } },
 				},
 			})
 		end,
@@ -397,59 +405,60 @@ require("lazy").setup({
 	{
 		"lewis6991/gitsigns.nvim",
 		config = function()
-			require('gitsigns').setup {
-				  signs = {
-					add          = { text = '┃' },
-					change       = { text = '┃' },
-					delete       = { text = '_' },
-					topdelete    = { text = '‾' },
-					changedelete = { text = '~' },
-					untracked    = { text = '┆' },
-				  },
-				  signs_staged = {
-					add          = { text = '┃' },
-					change       = { text = '┃' },
-					delete       = { text = '_' },
-					topdelete    = { text = '‾' },
-					changedelete = { text = '~' },
-					untracked    = { text = '┆' },
-				  },
-				  signs_staged_enable = true,
-				  signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
-				  numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
-				  linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
-				  word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
-				  watch_gitdir = {
-				  interval = 4000,
-					follow_files = true
-				  },
-				  auto_attach = true,
-				  attach_to_untracked = false,
-				  current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
-				  current_line_blame_opts = {
+			require("gitsigns").setup({
+				signs = {
+					add = { text = "┃" },
+					change = { text = "┃" },
+					delete = { text = "_" },
+					topdelete = { text = "‾" },
+					changedelete = { text = "~" },
+					untracked = { text = "┆" },
+				},
+				signs_staged = {
+					add = { text = "┃" },
+					change = { text = "┃" },
+					delete = { text = "_" },
+					topdelete = { text = "‾" },
+					changedelete = { text = "~" },
+					untracked = { text = "┆" },
+				},
+				signs_staged_enable = true,
+				signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
+				numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
+				linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
+				word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
+				watch_gitdir = {
+					interval = 4000,
+					follow_files = true,
+				},
+				auto_attach = true,
+				attach_to_untracked = false,
+				current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
+				current_line_blame_opts = {
 					virt_text = true,
-					virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+					virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
 					delay = 4000,
 					ignore_whitespace = false,
 					virt_text_priority = 100,
 					use_focus = true,
-				  },
-				  current_line_blame_formatter = '<author>, <author_time:%R> - <summary>',
-				  sign_priority = 6,
-				  update_debounce = 1000,
-				  status_formatter = nil, -- Use default
-				  max_file_length = 20000, -- Disable if file is longer than this (in lines)
-				  preview_config = {
+				},
+				current_line_blame_formatter = "<author>, <author_time:%R> - <summary>",
+				sign_priority = 6,
+				update_debounce = 1000,
+				status_formatter = nil, -- Use default
+				max_file_length = 20000, -- Disable if file is longer than this (in lines)
+				preview_config = {
 					-- Options passed to nvim_open_win
-					border = 'single',
-					style = 'minimal',
-					relative = 'cursor',
+					border = "single",
+					style = "minimal",
+					relative = "cursor",
 					row = 0,
-					col = 1
-				  },
-				}
+					col = 1,
+				},
+			})
 		end,
 	},
+	--[[
 	{
 		"rebelot/kanagawa.nvim",
 		config = function()
@@ -466,10 +475,22 @@ require("lazy").setup({
 				terminalColors = true, -- define vim.g.terminal_color_{0,17}
 				colors = { -- add/modify theme and palette colors
 					palette = {},
-					theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+					theme = {
+						all = {
+							ui = {
+								bg_gutter = "none",
+							},
+						},
+					},
 				},
 				overrides = function(colors) -- add/modify highlights
-					return {}
+					local theme = colors.theme
+					return {
+						Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1 }, -- add `blend = vim.o.pumblend` to enable transparency
+						PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
+						PmenuSbar = { bg = theme.ui.bg_m1 },
+						PmenuThumb = { bg = theme.ui.bg_p2 },
+					}
 				end,
 				theme = "dragon", -- Load "wave" theme when 'background' option is not set
 				background = { -- map the value of 'background' option to a theme
@@ -479,6 +500,7 @@ require("lazy").setup({
 			})
 		end,
 	},
+	--]]
 	--[[
 	{
 		"ggandor/flit.nvim",
@@ -493,7 +515,8 @@ require("lazy").setup({
 				opts = {},
 			})
 		end,
-	},]]--
+	},]]
+	--
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
@@ -609,7 +632,7 @@ require("lazy").setup({
 			local MASON_DEFAULT = {
 				-- A list of servers to automatically install if they're not already installed. Example: { "rust_analyzer@nightly", "sumneko_lua" }
 				-- This setting has no relation with the `automatic_installation` setting.
-				ensure_installed = { "rust_analyzer", "tailwindcss", "svelte", "lua_ls", "basedpyright" },
+				ensure_installed = { "rust_analyzer", "tailwindcss", "svelte", "lua_ls", "jedi_language_server", "clangd" },
 
 				-- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
 				-- This setting has no relation with the `ensure_installed` setting.
@@ -903,7 +926,7 @@ require("lazy").setup({
 			-- local coq = require"coq"
 			-- END UFO
 
-			local servers = { "tailwindcss", "basedpyright", "eslint", "ts_ls" }
+			local servers = { "tailwindcss", "jedi_language_server", "eslint", "ts_ls" }
 
 			for _, lsp in pairs(servers) do
 				require("lspconfig")[lsp].setup({
@@ -922,19 +945,19 @@ require("lazy").setup({
 		end,
 	},
 	"tpope/vim-repeat",
---	{
---		"ggandor/leap.nvim",
---		config = function()
---			require("leap").add_default_mappings()
---			vim.keymap.del({ "x", "o" }, "x")
---			vim.keymap.del({ "x", "o" }, "X")
---		end,
---	},
+	--	{
+	--		"ggandor/leap.nvim",
+	--		config = function()
+	--			require("leap").add_default_mappings()
+	--			vim.keymap.del({ "x", "o" }, "x")
+	--			vim.keymap.del({ "x", "o" }, "X")
+	--		end,
+	--	},
 	{
-	  "folke/flash.nvim",
-	  event = "VeryLazy",
-	  ---@type Flash.Config
-	  opts = {},
+		"folke/flash.nvim",
+		event = "VeryLazy",
+		---@type Flash.Config
+		opts = {},
 	  -- stylua: ignore
 	  keys = {
 		{ "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
@@ -1278,7 +1301,7 @@ settab(4)
 vim.cmd("autocmd BufRead * DetectIndent")
 
 -- vim.cmd('source ~/.config/nvim/colors.vim')
-vim.cmd("colorscheme kanagawa")
+-- vim.cmd("colorscheme kanagawa")
 vim.cmd([[
 function! Trim()
     let l:save = winsaveview()
@@ -1319,32 +1342,32 @@ vim.api.nvim_create_user_command("Format", function(args)
 end, { range = true })
 
 function MagmaInitPython()
-    vim.cmd[[
+	vim.cmd([[
     :MagmaInit python3
     :MagmaEvaluateArgument a=5
-    ]]
+    ]])
 end
 
 function MagmaInitCSharp()
-    vim.cmd[[
+	vim.cmd([[
     :MagmaInit .net-csharp
     :MagmaEvaluateArgument Microsoft.DotNet.Interactive.Formatting.Formatter.SetPreferredMimeTypesFor(typeof(System.Object),"text/plain");
-    ]]
+    ]])
 end
 
 function MagmaInitFSharp()
-    vim.cmd[[
+	vim.cmd([[
     :MagmaInit .net-fsharp
     :MagmaEvaluateArgument Microsoft.DotNet.Interactive.Formatting.Formatter.SetPreferredMimeTypesFor(typeof<System.Object>,"text/plain")
-    ]]
+    ]])
 end
 -- move selected lines up one line
 vim.cmd("xnoremap <somekey>  :m-2<CR>gv=gv")
 -- move selected lines down one line
 vim.cmd("xnoremap <otherkey> :m'>+<CR>gv=gv")
 
-vim.cmd[[
+vim.cmd([[
 :command MagmaInitPython lua MagmaInitPython()
 :command MagmaInitCSharp lua MagmaInitCSharp()
 :command MagmaInitFSharp lua MagmaInitFSharp()
-]]
+]])
