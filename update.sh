@@ -33,6 +33,7 @@ cp /home/sean/.config/.zshrc zshrc
 cp -r /home/sean/.oh-my-zsh/themes/ .
 cp -r /home/sean/.config/tmux ./config
 cp /home/sean/.config/alias_all .
+cp /home/sean/.emacs.d/init.el ./emacs
 mv themes zsh_themes
 touch ./BetterDiscord/plugins-list.txt
 ls -l /home/sean/.config/BetterDiscord/plugins/ | grep plugin.js > ./BetterDiscord/plugins-list.txt
