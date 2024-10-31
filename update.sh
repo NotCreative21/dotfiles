@@ -37,4 +37,5 @@ cp /home/sean/.emacs.d/init.el ./emacs
 mv themes zsh_themes
 touch ./BetterDiscord/plugins-list.txt
 ls -l /home/sean/.config/BetterDiscord/plugins/ | grep plugin.js > ./BetterDiscord/plugins-list.txt
+sed '/waka-api-key/d' emacs/init.el > emacs/init.el
 notify-send "done"
