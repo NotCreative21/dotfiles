@@ -1,6 +1,23 @@
 ;; The default is 800 kilobytes.  Measured in bytes.
 (setq gc-cons-threshold (* 50 1000 1000))
 
+(setq straight-use-package-by-default 1)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
 (defun efs/display-startup-time ()
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
@@ -10,38 +27,16 @@
 
 (add-hook 'emacs-startup-hook #'efs/display-startup-time)
 
-;; Initialize package sources
-(require 'package)
+(straight-use-package 'use-package)
 
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
+;; allow "y" or "n" instead of "yes" or "no"
+(setopt use-short-answers t)
 
+(use-package no-littering
+  :straight t)
 
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
-
-  ;; Initialize use-package on non-Linux platforms
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-(require 'use-package)
-(setq use-package-always-ensure t)
-
-(use-package auto-package-update
-  :custom
-  (auto-package-update-interval 7)
-  (auto-package-update-prompt-before-update t)
-  (auto-package-update-hide-results t)
-  :config
-  (auto-package-update-at-time "09:00"))
-
-;; NOTE: If you want to move everything out of the ~/.emacs.d folder
-;; reliably, set `user-emacs-directory` before loading no-littering!
-;(setq user-emacs-directory "~/.cache/emacs")
-
-(use-package no-littering)
+(use-package wakatime-mode
+  :straight t)
 
 ;; no-littering doesn't set this by default so we must place
 ;; auto save files in the same path as it uses for sessions
@@ -74,6 +69,9 @@
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; stop dired buffers from accumulating
+(setf dired-kill-when-opening-new-dired-buffer t)
 
 (defun isearch-forward-backward ()
   "Start an incremental search, alternating direction with each press of C-s.
@@ -113,7 +111,7 @@ Return to original position if the search is canceled with ESC."
 (unless (package-installed-p 'undo-fu)
   (package-install 'undo-fu))
 (use-package avy
-  :ensure t
+  :straight t
   :init
   (avy-setup-default)
   :config
@@ -124,17 +122,26 @@ Return to original position if the search is canceled with ESC."
   (package-install 'evil))
 
 (use-package evil
-  :ensure t
+  :straight t
   :init
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
   (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
   :config
-  (evil-mode 1))
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
 
 (use-package evil-collection
   :after evil
-  :ensure t
+  :straight t
   :config
   (evil-collection-init))
 
@@ -193,7 +200,7 @@ Return to original position if the search is canceled with ESC."
   (package-install 'ace-window))
 
 (use-package ace-window
-  :ensure t
+  :straight t
   :bind (("M-o" . ace-window))  ;; Bind M-o to ace-window
   :config
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))  ;; Customize keys for window selection
@@ -218,19 +225,15 @@ Return to original position if the search is canceled with ESC."
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    '("712dda0818312c175a60d94ba676b404fc815f8c7e6c080c9b4061596c60a1db" "d41229b2ff1e9929d0ea3b4fde9ed4c1e0775993df9d998a3cdf37f2358d386b" "fbf73690320aa26f8daffdd1210ef234ed1b0c59f3d001f342b9c0bbf49f531c" default))
+ '(mini-frame-show-parameters '((top . 0) (width . 0.7) (left . 0.5) (height . 15)))
  '(package-selected-packages
-   '(mini-frame lsp-bridge wakatime-mode evil-collection yasnippet evil no-littering auto-package-update))
- '(mini-frame-show-parameters
-   '((top . 0)
-     (width . 0.7)
-     (left . 0.5)
-     (height . 15)))
+   '(posframe projectile mini-frame lsp-bridge wakatime-mode evil-collection yasnippet evil no-littering auto-package-update))
  '(wakatime-cli-path "/usr/local/bin/wakatime-cli"))
 
 (global-wakatime-mode)
 
 (use-package markdown-mode
-  :ensure t
+  :straight t
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown")
   :bind (:map markdown-mode-map
@@ -244,54 +247,61 @@ Return to original position if the search is canceled with ESC."
 ;; lsp configuration
 (add-to-list 'load-path "~/.emacs.d/lsp-bridge")
 
-(require 'yasnippet)
+(use-package posframe
+  :straight t
+  :config
+  ;; Optional customization for debugging purposes
+  (setq posframe-mouse-banish t))    ;; Move cursor away from popups
+
+(use-package yasnippet)
 (yas-global-mode 1)
 
-(require 'lsp-bridge)
-(global-lsp-bridge-mode)
+(use-package lsp-bridge
+  :defer 3
+  :after (yasnippet orderless)
+  :straight (:type git :host github :repo "manateelazycat/lsp-bridge"
+                 :files (:defaults
+                         "*.el"
+                         "*.py"
+                         "acm"
+                         "core"
+                         "langserver"
+                         "multiserver"
+                         "resources")
+                 :build (:not compile))
 
-;; inlay hints
-(setq lsp-bridge-inlay-hint 1)
+  :config
+  ;; disable tabnine garabage
+  (setq acm-enable-tabnine nil)
 
-;; allow lsp-bridge with tramp
-(setq lsp-bridge-enable-with-tramp 1)
+  ;; enable signature help in posframe
+  (setq lsp-bridge-enable-signature-help t)
+  (setq lsp-bridge-signature-help-fetch-idle 0.3)
+  (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
+  (setq lsp-bridge-signature-show-with-frame-position 'point)
+  ;; inlay hints
+  (setq lsp-bridge-inlay-hint 1)
 
-;; auto start lsp_bridge.py on remote host
-(setq lsp-bridge-remote-start-automatically t)
+  ;; allow lsp-bridge with tramp
+  (setq lsp-bridge-enable-with-tramp 1)
 
-;; This is a better option if the `pyenv' executable is discoverable on `exec-path':
-(setq lsp-bridge-python-command (string-trim
+  ;; auto start lsp_bridge.py on remote host
+  (setq lsp-bridge-remote-start-automatically t)
+
+  ;; This is a better option if the `pyenv' executable is discoverable on `exec-path':
+  (setq lsp-bridge-python-command (string-trim
                                  (shell-command-to-string "pyenv which python3")))
 
-(with-eval-after-load 'lsp-bridge
-  ;; Function to install language servers automatically
-  (defun lsp-bridge-install-server (server)
-    "Install the specified language SERVER."
-    (pcase server
-      ("rust-analyzer"
-       (unless (executable-find "rust-analyzer")
-         (shell-command "rustup component add rust-analyzer")))
-      ("pyright"
-       (unless (executable-find "pyright")
-         (shell-command "npm install -g pyright")))))
+  ;; small QoL
+  ;;(setq acm-enable-quick-access t)
 
-  ;; Add hooks to install servers when entering a mode
-  (add-hook 'lsp-bridge-mode-hook
-            (lambda ()
-              (let ((server (lsp-bridge-get-lang-server)))
-                (when server
-                  (lsp-bridge-install-server server)))))
-
-  ;; Set rust-analyzer as the server for Rust
-  (add-to-list 'lsp-bridge-default-mode-hooks 'rust-mode-hook)
-  (setq lsp-bridge-lang-server-providers
-        '(("rust" . "rust-analyzer")))
-  (setq lsp-bridge-rust-server "rust-analyzer")
-  (setq lsp-bridge-python-server "pyright"))
-
-;; Automatically start lsp-bridge for Rust files
-(add-hook 'rust-mode-hook (lambda () (lsp-bridge-mode 1)))
-(add-hook 'python-mode-hook (lambda () (lsp-bridge-mode 1)))
+  ;; language servers
+  (setq lsp-bridge-c-lsp-server "ccls")
+  (setq lsp-bridge-python-lsp-server "pyright")
+  (setq lsp-bridge-rust-lsp-server "rust_analyzer")
+  ;; (setq lsp-bridge-elixir-lsp-server "lexical")
+  :init
+  (global-lsp-bridge-mode))
 
 ;; i don't know keybinds
 (use-package which-key
@@ -309,11 +319,29 @@ Return to original position if the search is canceled with ESC."
    )
 )
 
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  ;; NOTE: Set this to the folder where you keep your Git repos!
+  (when (file-directory-p "~/Documents")
+    (setq projectile-project-search-path '("~/Documents")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package magit
+  :commands magit-status
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
 ;; Download Modus theme
 (unless (package-installed-p 'modus-themes)
   (package-install 'modus-themes))
 
-(require-theme 'modus-themes)
+(use-package modus-themes
+  :load-path "themes")
 
 ;; All customizations here
 (setq modus-themes-bold-constructs t
@@ -332,3 +360,6 @@ Return to original position if the search is canceled with ESC."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; Make gc pauses faster by decreasing the threshold.
+(setq gc-cons-threshold (* 2 1000 1000))
