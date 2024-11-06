@@ -10,10 +10,10 @@ vim.opt.encoding = "utf-8"
 vim.opt.termguicolors = true
 vim.opt.showtabline = 2
 -- THEME
-vim.cmd [[
+vim.cmd([[
 	silent! colorscheme snow
 	hi Normal guibg=#191919
-]]
+]])
 vim.cmd("set signcolumn=number")
 vim.cmd("set t_Co=256")
 vim.cmd("set nobackup")
@@ -28,7 +28,6 @@ vim.cmd("autocmd BufWrite * call g:ChmodOnWrite()")
 vim.cmd("command! -nargs=1 Rename saveas <args> | call delete(expand('#')) | bd #")
 vim.cmd("set viminfo=%,<800,'10,/50,:100,h,f0,n~/.config/viminfo")
 vim.cmd("set viminfo=%,<800,'10,/50,:100,h,f0,n~/.config/viminfo")
-vim.g.lsp_zero_extend_lspconfig = 0
 
 vim.fn.sign_define(
 	"DiagnosticSignError",
@@ -210,7 +209,24 @@ require("lazy").setup({
 		end,
 	},
 	"ntpeters/vim-better-whitespace",
-	"chrisbra/csv.vim",
+	{
+		"vidocqh/data-viewer.nvim",
+		opts = {},
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
+	},
+	{
+		"NeogitOrg/neogit",
+		dependencies = {
+			"nvim-lua/plenary.nvim", -- required
+			"sindrets/diffview.nvim", -- optional - Diff integration
+
+			-- Only one of these is needed.
+			"nvim-telescope/telescope.nvim", -- optional
+		},
+		config = true,
+	},
 	"junegunn/fzf.vim",
 	{
 		"numToStr/Comment.nvim",
@@ -218,7 +234,6 @@ require("lazy").setup({
 			require("Comment").setup()
 		end,
 	},
-	"VonHeikemen/lsp-zero.nvim",
 	{
 		"kevinhwang91/nvim-hlslens",
 		config = function()
@@ -567,72 +582,21 @@ require("lazy").setup({
 			})
 		end,
 	},
-	{
-		"simrat39/rust-tools.nvim",
-		config = function()
-			local opts = {
-				tools = { -- rust-tools options
-					autoSetHints = true,
-					--hover_with_actions = true,
-					inlay_hints = {
-						show_parameter_hints = true,
-						parameter_hints_prefix = "",
-						other_hints_prefix = "",
-					},
-				},
-
-				-- all the opts to send to nvim-lspconfig
-				-- these override the defaults set by rust-tools.nvim
-				-- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
-				server = {
-					-- on_attach is a callback called when the language server attachs to the buffer
-					-- on_attach = on_attach,
-					settings = {
-						-- to enable rust-analyzer settings visit:
-						-- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-						["rust-analyzer"] = {
-							-- enable clippy on save
-							checkOnSave = {
-								command = "clippy",
-							},
-							inlay_hints = {
-								maxLength = 20,
-								closureReturnTypeHints = true,
-							},
-						},
-					},
-				},
-				-- options same as lsp hover / vim.lsp.util.open_floating_preview()
-				hover_actions = {
-					-- the border that is used for the hover window
-					-- see vim.api.nvim_open_win()
-					border = {
-						{ "╭", "FloatBorder" },
-						{ "─", "FloatBorder" },
-						{ "╮", "FloatBorder" },
-						{ "│", "FloatBorder" },
-						{ "╯", "FloatBorder" },
-						{ "─", "FloatBorder" },
-						{ "╰", "FloatBorder" },
-						{ "│", "FloatBorder" },
-					},
-
-					-- whether the hover action window gets automatically focused
-					-- default: false
-					auto_focus = true,
-				},
-			}
-
-			require("rust-tools").setup(opts)
-		end,
-	},
+	{ "simrat39/rust-tools.nvim" },
 	{
 		"williamboman/mason-lspconfig.nvim",
 		config = function()
 			local MASON_DEFAULT = {
 				-- A list of servers to automatically install if they're not already installed. Example: { "rust_analyzer@nightly", "sumneko_lua" }
 				-- This setting has no relation with the `automatic_installation` setting.
-				ensure_installed = { "rust_analyzer", "tailwindcss", "svelte", "lua_ls", "jedi_language_server", "clangd" },
+				ensure_installed = {
+					"rust_analyzer",
+					"tailwindcss",
+					"svelte",
+					"lua_ls",
+					"jedi_language_server",
+					"clangd",
+				},
 
 				-- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
 				-- This setting has no relation with the `ensure_installed` setting.
@@ -642,6 +606,192 @@ require("lazy").setup({
 				--   - { exclude: string[] }: All servers set up via lspconfig, except the ones provided in the list, are automatically installed.
 				--       Example: automatic_installation = { exclude = { "rust_analyzer", "solargraph" } }
 				automatic_installation = true,
+
+				handlers = {
+					-- The first entry (without a key) will be the default handler
+					-- and will be called for each installed server that doesn't have
+					-- a dedicated handler.
+					-- Next, you can provide a dedicated handler for specific servers.
+					-- For example, a handler override for the `rust_analyzer`:
+					["rust_analyzer"] = function()
+						local opts = {
+							tools = { -- rust-tools options
+
+								-- how to execute terminal commands
+								-- options right now: termopen / quickfix / toggleterm / vimux
+								executor = require("rust-tools.executors").termopen,
+
+								-- callback to execute once rust-analyzer is done initializing the workspace
+								-- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
+								on_initialized = nil,
+
+								-- automatically call RustReloadWorkspace when writing to a Cargo.toml file.
+								reload_workspace_from_cargo_toml = true,
+
+								-- These apply to the default RustSetInlayHints command
+								inlay_hints = {
+									-- automatically set inlay hints (type hints)
+									-- default: true
+									auto = true,
+
+									-- Only show inlay hints for the current line
+									only_current_line = false,
+
+									-- whether to show parameter hints with the inlay hints or not
+									-- default: true
+									show_parameter_hints = true,
+
+									-- prefix for parameter hints
+									-- default: "<-"
+									parameter_hints_prefix = "<- ",
+
+									-- prefix for all the other hints (type, chaining)
+									-- default: "=>"
+									other_hints_prefix = "=> ",
+
+									-- whether to align to the length of the longest line in the file
+									max_len_align = false,
+
+									-- padding from the left if max_len_align is true
+									max_len_align_padding = 1,
+
+									-- whether to align to the extreme right or not
+									right_align = false,
+
+									-- padding from the right if right_align is true
+									right_align_padding = 7,
+
+									-- The color of the hints
+									highlight = "Comment",
+								},
+
+								-- options same as lsp hover / vim.lsp.util.open_floating_preview()
+								hover_actions = {
+
+									-- the border that is used for the hover window
+									-- see vim.api.nvim_open_win()
+									border = {
+										{ "╭", "FloatBorder" },
+										{ "─", "FloatBorder" },
+										{ "╮", "FloatBorder" },
+										{ "│", "FloatBorder" },
+										{ "╯", "FloatBorder" },
+										{ "─", "FloatBorder" },
+										{ "╰", "FloatBorder" },
+										{ "│", "FloatBorder" },
+									},
+
+									-- Maximal width of the hover window. Nil means no max.
+									max_width = nil,
+
+									-- Maximal height of the hover window. Nil means no max.
+									max_height = nil,
+
+									-- whether the hover action window gets automatically focused
+									-- default: false
+									auto_focus = false,
+								},
+
+								-- settings for showing the crate graph based on graphviz and the dot
+								-- command
+								crate_graph = {
+									-- Backend used for displaying the graph
+									-- see: https://graphviz.org/docs/outputs/
+									-- default: x11
+									backend = "x11",
+									-- where to store the output, nil for no output stored (relative
+									-- path from pwd)
+									-- default: nil
+									output = nil,
+									-- true for all crates.io and external crates, false only the local
+									-- crates
+									-- default: true
+									full = true,
+
+									-- List of backends found on: https://graphviz.org/docs/outputs/
+									-- Is used for input validation and autocompletion
+									-- Last updated: 2021-08-26
+									enabled_graphviz_backends = {
+										"bmp",
+										"cgimage",
+										"canon",
+										"dot",
+										"gv",
+										"xdot",
+										"xdot1.2",
+										"xdot1.4",
+										"eps",
+										"exr",
+										"fig",
+										"gd",
+										"gd2",
+										"gif",
+										"gtk",
+										"ico",
+										"cmap",
+										"ismap",
+										"imap",
+										"cmapx",
+										"imap_np",
+										"cmapx_np",
+										"jpg",
+										"jpeg",
+										"jpe",
+										"jp2",
+										"json",
+										"json0",
+										"dot_json",
+										"xdot_json",
+										"pdf",
+										"pic",
+										"pct",
+										"pict",
+										"plain",
+										"plain-ext",
+										"png",
+										"pov",
+										"ps",
+										"ps2",
+										"psd",
+										"sgi",
+										"svg",
+										"svgz",
+										"tga",
+										"tiff",
+										"tif",
+										"tk",
+										"vml",
+										"vmlz",
+										"wbmp",
+										"webp",
+										"xlib",
+										"x11",
+									},
+								},
+							},
+
+							-- all the opts to send to nvim-lspconfig
+							-- these override the defaults set by rust-tools.nvim
+							-- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
+							server = {
+								-- standalone file support
+								-- setting it to false may improve startup time
+								standalone = true,
+							}, -- rust-analyzer options
+
+							-- debugging stuff
+							dap = {
+								adapter = {
+									type = "executable",
+									command = "lldb-vscode",
+									name = "rt_lldb",
+								},
+							},
+						}
+
+						require("rust-tools").setup(opts)
+					end,
+				},
 			}
 			require("mason-lspconfig").setup(MASON_DEFAULT)
 		end,
@@ -762,178 +912,6 @@ require("lazy").setup({
 	},
 	{
 		"neovim/nvim-lspconfig",
-		config = function()
-			local nvim_lsp = require("lspconfig")
-			local kopts = { noremap = true, silent = true }
-			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, kopts)
-			vim.keymap.set("n", "]d", vim.diagnostic.goto_next, kopts)
-
-			local opts = {
-				tools = { -- rust-tools options
-					autoSetHints = true,
-					--hover_with_actions = true,
-					inlay_hints = {
-						show_parameter_hints = true,
-						parameter_hints_prefix = "",
-						other_hints_prefix = "",
-					},
-				},
-
-				-- all the opts to send to nvim-lspconfig
-				-- these override the defaults set by rust-tools.nvim
-				-- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
-				server = {
-					-- on_attach is a callback called when the language server attachs to the buffer
-					-- on_attach = on_attach,
-					settings = {
-						-- to enable rust-analyzer settings visit:
-						-- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-						["rust-analyzer"] = {
-							-- enable clippy on save
-							checkOnSave = {
-								command = "clippy",
-							},
-							inlay_hints = {
-								maxLength = 20,
-								closureReturnTypeHints = true,
-							},
-						},
-					},
-				},
-				-- options same as lsp hover / vim.lsp.util.open_floating_preview()
-				hover_actions = {
-					-- the border that is used for the hover window
-					-- see vim.api.nvim_open_win()
-					border = {
-						{ "╭", "FloatBorder" },
-						{ "─", "FloatBorder" },
-						{ "╮", "FloatBorder" },
-						{ "│", "FloatBorder" },
-						{ "╯", "FloatBorder" },
-						{ "─", "FloatBorder" },
-						{ "╰", "FloatBorder" },
-						{ "│", "FloatBorder" },
-					},
-
-					-- whether the hover action window gets automatically focused
-					-- default: false
-					auto_focus = true,
-				},
-			}
-
-			-- require("document-color").setup {
-			--     -- Default options
-			--     mode = "background", -- "background" | "foreground" | "single"
-			-- }
-			--
-			-- local on_attach = function(client)
-			--   if client.server_capabilities.colorProvider then
-			--     -- Attach document colour support
-			--     require("document-color").buf_attach(bufnr)
-			--   end
-			-- end
-
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-			-- BEING UFO
-			-- -- nvim ufo folding
-			-- capabilities.textDocument.foldingRange = {
-			--     dynamicRegistration = false,
-			--     lineFoldingOnly = true
-			-- }
-			--
-			-- -- You are now capable!
-			-- capabilities.textDocument.colorProvider = {
-			--   dynamicRegistration = true
-			-- }
-
-			-- Lsp servers that support documentColor
-			require("lspconfig").tailwindcss.setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-			})
-
-			-- local ftMap = {
-			--     vim = 'indent',
-			--     python = {'indent'},
-			--     git = ''
-			-- }
-			--
-			-- local handler = function(virtText, lnum, endLnum, width, truncate)
-			--     local newVirtText = {}
-			--     local suffix = ('  %d '):format(endLnum - lnum)
-			--     local sufWidth = vim.fn.strdisplaywidth(suffix)
-			--     local targetWidth = width - sufWidth
-			--     local curWidth = 0
-			--     for _, chunk in ipairs(virtText) do
-			--         local chunkText = chunk[1]
-			--         local chunkWidth = vim.fn.strdisplaywidth(chunkText)
-			--         if targetWidth > curWidth + chunkWidth then
-			--             table.insert(newVirtText, chunk)
-			--         else
-			--             chunkText = truncate(chunkText, targetWidth - curWidth)
-			--             local hlGroup = chunk[2]
-			--             table.insert(newVirtText, {chunkText, hlGroup})
-			--             chunkWidth = vim.fn.strdisplaywidth(chunkText)
-			--             -- str width returned from truncate() may less than 2nd argument, need padding
-			--             if curWidth + chunkWidth < targetWidth then
-			--                 suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
-			--             end
-			--             break
-			--         end
-			--         curWidth = curWidth + chunkWidth
-			--     end
-			--     table.insert(newVirtText, {suffix, 'MoreMsg'})
-			--     return newVirtText
-			-- end
-			--
-			-- vim.keymap.set('n', 'zK', function()
-			--     local winid = require('ufo').peekFoldedLinesUnderCursor()
-			--     if not winid then
-			--         -- choose one of them
-			--         -- coc.nvim
-			--         -- vim.fn.CocActionAsync('definitionHover')
-			--         -- nvimlsp
-			--         vim.lsp.buf.hover()
-			--     end
-			-- end)
-			--
-			-- require('ufo').setup({
-			--     fold_virt_text_handler = handler,
-			--     open_fold_hl_timeout = 100,
-			--     close_fold_kinds = {'imports', 'comment'},
-			--     preview = {
-			--         win_config = {
-			--             border = {'', '─', '', '', '', '─', '', ''},
-			--             winhighlight = 'Normal:Folded',
-			--             winblend = 0
-			--         },
-			--         mappings = {
-			--             scrollU = '<C-u>',
-			--             scrollD = '<C-d>'
-			--         }
-			--     },
-			--     provider_selector = function(bufnr, filetype, buftype)
-			--         -- if you prefer treesitter provider rather than lsp,
-			--         -- return ftMap[filetype] or {'treesitter', 'indent'}
-			--         -- return ftMap[filetype]
-			--         return {'treesitter', 'indent'}
-			--
-			--         -- refer to ./doc/example.lua for detail
-			--     end
-			-- })
-			--
-			-- local coq = require"coq"
-			-- END UFO
-
-			local servers = { "tailwindcss", "jedi_language_server", "eslint", "ts_ls" }
-
-			for _, lsp in pairs(servers) do
-				require("lspconfig")[lsp].setup({
-					capabilities = capabilities,
-				})
-			end
-		end,
 	},
 	"wakatime/vim-wakatime",
 	{
@@ -942,6 +920,37 @@ require("lazy").setup({
 			require("nvim-autopairs").setup({
 				enable_check_bracket_line = false,
 			})
+		end,
+	},
+	{
+		"ellisonleao/gruvbox.nvim",
+		priority = 1000,
+		config = function()
+			require("gruvbox").setup({
+				terminal_colors = true, -- add neovim terminal colors
+				undercurl = true,
+				underline = true,
+				bold = true,
+				italic = {
+					strings = true,
+					emphasis = true,
+					comments = true,
+					operators = false,
+					folds = true,
+				},
+				strikethrough = true,
+				invert_selection = false,
+				invert_signs = false,
+				invert_tabline = false,
+				invert_intend_guides = false,
+				inverse = true, -- invert background for search, diffs, statuslines and errors
+				contrast = "hard", -- can be "hard", "soft" or empty string
+				palette_overrides = {},
+				overrides = {},
+				dim_inactive = false,
+				transparent_mode = true,
+			})
+			vim.cmd("colorscheme gruvbox")
 		end,
 	},
 	"tpope/vim-repeat",
@@ -1321,14 +1330,11 @@ map("n", "<C-h>", ":call WinMove('h')<ENTER>", { silent = true })
 map("n", "<C-j>", ":call WinMove('j')<ENTER>", { silent = true })
 map("n", "<C-k>", ":call WinMove('k')<ENTER>", { silent = true })
 map("n", "<C-l>", ":call WinMove('l')<ENTER>", { silent = true })
-local lsp = require("lsp-zero")
 
 vim.api.nvim_create_user_command("Binary", function(args)
 	vim.api.nvim_exec(":%!xxd -b", false)
 end, { range = false })
 
-lsp.preset("recommended")
-lsp.setup()
 vim.api.nvim_create_user_command("Format", function(args)
 	local range = nil
 	if args.count ~= -1 then
@@ -1371,3 +1377,7 @@ vim.cmd([[
 :command MagmaInitCSharp lua MagmaInitCSharp()
 :command MagmaInitFSharp lua MagmaInitFSharp()
 ]])
+local opts = { noremap = true, silent = true }
+vim.keymap.set({ "n", "i" }, "gI", function()
+	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end, opts)

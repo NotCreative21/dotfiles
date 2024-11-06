@@ -1,6 +1,9 @@
 ;; The default is 800 kilobytes.  Measured in bytes.
 (setq gc-cons-threshold (* 50 1000 1000))
 
+;; ensure stuff like eglot is updated
+(setopt package-install-upgrade-built-in t)
+
 (setq straight-use-package-by-default 1)
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -227,25 +230,16 @@ Return to original position if the search is canceled with ESC."
    '("712dda0818312c175a60d94ba676b404fc815f8c7e6c080c9b4061596c60a1db" "d41229b2ff1e9929d0ea3b4fde9ed4c1e0775993df9d998a3cdf37f2358d386b" "fbf73690320aa26f8daffdd1210ef234ed1b0c59f3d001f342b9c0bbf49f531c" default))
  '(mini-frame-show-parameters '((top . 0) (width . 0.7) (left . 0.5) (height . 15)))
  '(package-selected-packages
-   '(posframe projectile mini-frame lsp-bridge wakatime-mode evil-collection yasnippet evil no-littering auto-package-update))
+   '(posframe projectile mini-frame wakatime-mode evil-collection yasnippet evil no-littering auto-package-update))
  '(wakatime-cli-path "/usr/local/bin/wakatime-cli"))
 
 (global-wakatime-mode)
-
-(use-package markdown-mode
-  :straight t
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "multimarkdown")
-  :bind (:map markdown-mode-map
-         ("C-c C-e" . markdown-do)))
 
 ;; fzf alternative
 (use-package affe
   :config
   ;; Manual preview key for `affe-grep'
   (consult-customize affe-grep :preview-key "M-."))
-;; lsp configuration
-(add-to-list 'load-path "~/.emacs.d/lsp-bridge")
 
 (use-package posframe
   :straight t
@@ -256,52 +250,80 @@ Return to original position if the search is canceled with ESC."
 (use-package yasnippet)
 (yas-global-mode 1)
 
-(use-package lsp-bridge
-  :defer 3
-  :after (yasnippet orderless)
-  :straight (:type git :host github :repo "manateelazycat/lsp-bridge"
-                 :files (:defaults
-                         "*.el"
-                         "*.py"
-                         "acm"
-                         "core"
-                         "langserver"
-                         "multiserver"
-                         "resources")
-                 :build (:not compile))
+(use-package eldoc
+    :init
+    (global-eldoc-mode))
 
-  :config
-  ;; disable tabnine garabage
-  (setq acm-enable-tabnine nil)
-
-  ;; enable signature help in posframe
-  (setq lsp-bridge-enable-signature-help t)
-  (setq lsp-bridge-signature-help-fetch-idle 0.3)
-  (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
-  (setq lsp-bridge-signature-show-with-frame-position 'point)
-  ;; inlay hints
-  (setq lsp-bridge-inlay-hint 1)
-
-  ;; allow lsp-bridge with tramp
-  (setq lsp-bridge-enable-with-tramp 1)
-
-  ;; auto start lsp_bridge.py on remote host
-  (setq lsp-bridge-remote-start-automatically t)
-
-  ;; This is a better option if the `pyenv' executable is discoverable on `exec-path':
-  (setq lsp-bridge-python-command (string-trim
-                                 (shell-command-to-string "pyenv which python3")))
-
-  ;; small QoL
-  ;;(setq acm-enable-quick-access t)
-
-  ;; language servers
-  (setq lsp-bridge-c-lsp-server "ccls")
-  (setq lsp-bridge-python-lsp-server "pyright")
-  (setq lsp-bridge-rust-lsp-server "rust_analyzer")
-  ;; (setq lsp-bridge-elixir-lsp-server "lexical")
+(use-package rust-mode
   :init
-  (global-lsp-bridge-mode))
+  (setq rust-mode-treesitter-derive t))
+
+
+(add-hook 'rust-mode-hook
+          (lambda () (setq indent-tabs-mode nil)))
+
+(use-package eglot
+  :hook ((rust-mode nix-mode) . eglot-ensure)
+  :config
+
+  (fset #'jsonrpc--log-event #'ignore)
+  (eglot-events-buffer-size 0)
+  (eglot-booster-mode))
+
+(add-hook 'rust-mode-hook 'eglot-ensure)
+
+(setq treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (python "https://github.com/tree-sitter/tree-sitter-python")
+     (rust "https://github.com/tree-sitter/tree-sitter-rust")
+     (toml "https://github.com/tree-sitter/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+;;(mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
+
+(use-package company
+    :commands (global-company-mode)
+    :init
+    (global-company-mode)
+    :custom
+    (company-tooltip-align-annotations 't)
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.1))
+
+(use-package company-posframe
+  :init
+  (company-posframe-mode 1))
+
+
+;; A few more useful configurations...
+(use-package emacs
+  :custom
+  ;; TAB cycle if there are only few candidates
+  ;; (completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete)
+
+  ;; Emacs 30 and newer: Disable Ispell completion function. As an alternative,
+  ;; try `cape-dict'.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
 
 ;; i don't know keybinds
 (use-package which-key
@@ -360,6 +382,37 @@ Return to original position if the search is canceled with ESC."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(use-package nano-modeline
+    :init
+    (nano-modeline-prog-mode t)
+    :custom
+    (nano-modeline-position 'nano-modeline-footer)
+    :hook
+    (prog-mode           . nano-modeline-prog-mode)
+    (text-mode           . nano-modeline-text-mode)
+    (org-mode            . nano-modeline-org-mode)
+    (pdf-view-mode       . nano-modeline-pdf-mode)
+    (mu4e-headers-mode   . nano-modeline-mu4e-headers-mode)
+    (mu4e-view-mode      . nano-modeline-mu4e-message-mode)
+    (elfeed-show-mode    . nano-modeline-elfeed-entry-mode)
+    (elfeed-search-mode  . nano-modeline-elfeed-search-mode)
+    (term-mode           . nano-modeline-term-mode)
+    (xwidget-webkit-mode . nano-modeline-xwidget-mode)
+    (messages-buffer-mode . nano-modeline-message-mode)
+    (org-capture-mode    . nano-modeline-org-capture-mode)
+    (org-agenda-mode     . nano-modeline-org-agenda-mode))
+
+(use-package company
+    :commands (global-company-mode)
+    :init
+    (global-company-mode)
+    :custom
+    (company-tooltip-align-annotations 't)
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.1))
+
+(use-package markdown-mode
+    :magic "\\.md\\'")
 
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
