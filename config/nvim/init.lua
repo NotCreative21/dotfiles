@@ -596,6 +596,13 @@ require("lazy").setup({
 					"lua_ls",
 					"jedi_language_server",
 					"clangd",
+					"eslint",
+					"hls",
+					"lua_ls",
+					"ruff_lsp",
+					"svelte",
+					"tailwindcss",
+					"tsserver",
 				},
 
 				-- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
