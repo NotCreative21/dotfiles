@@ -595,14 +595,9 @@ require("lazy").setup({
 					"svelte",
 					"lua_ls",
 					"jedi_language_server",
+					"pylsp",
 					"clangd",
-					"eslint",
-					"hls",
-					"lua_ls",
-					"ruff_lsp",
-					"svelte",
-					"tailwindcss",
-					"tsserver",
+					"gopls",
 				},
 
 				-- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
@@ -800,8 +795,24 @@ require("lazy").setup({
 					end,
 				},
 			}
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			require("lspconfig").gopls.setup({
+				capabilities = capabilities,
+			})
+			require("lspconfig").pylsp.setup({
+				capabilities = capabilities,
+			})
+			require("lspconfig").svelte.setup({
+				capabilities = capabilities,
+			})
 			require("mason-lspconfig").setup(MASON_DEFAULT)
 		end,
+	},
+	{
+	  'hat0uma/csvview.nvim',
+	  config = function()
+		require('csvview').setup()
+	  end
 	},
 	{
 		"iamcco/markdown-preview.nvim",
@@ -997,7 +1008,6 @@ require("lazy").setup({
 			})
 		end,
 	},
-	"petobens/poet-v",
 	"lambdalisue/suda.vim",
 	"nvim-lua/plenary.nvim",
 	{
